@@ -56,21 +56,5 @@ interface QQQApiService
    @GET("/metaData/process/{processName}")
    suspend fun getProcessMetaData(@Path(value = "processName") processName: String): QProcessMetaDataWrapped
 
-   ///////////////////////////////////////////////////////////////////////////////
-   // todo - maybe this is supposed to use some kind of interceptor in okhttp?? //
-   // but, if this works, just go with it??                                     //
-   ///////////////////////////////////////////////////////////////////////////////
-   /*
-   object Creddy
-   {
-      // Create credentials
-      val username = "darin+devcoldtrack@coldtrack.com"
-      val password = "bgz3pnx@KDP1zmx_jdw"
-
-      // create correct Base64 encoded Basic Auth credentials
-      val credentials = Credentials.basic(username, password)
-   }
-   */
-
 }
 
