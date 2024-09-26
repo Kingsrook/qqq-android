@@ -8,7 +8,7 @@ jobs:
   unit-test:
     executor:
       name: android/android-docker
-      tag: 2024.09
+      tag: "2024.09"
     steps:
       - checkout
       - android/restore-gradle-cache
@@ -34,7 +34,7 @@ jobs:
     executor:
       name: android/android-machine
       resource-class: xlarge
-      tag: 2024.09
+      tag: "2024.09"
     steps:
       - checkout
       - android/start-emulator-and-run-tests:
@@ -54,7 +54,7 @@ jobs:
   benchmarks-ftl:
     executor:
       name: android/android-docker
-      tag: 2024.09-node
+      tag: "2024.09-node"
     steps:
       - checkout
       - android/restore-gradle-cache
@@ -109,7 +109,7 @@ workflows:
       - android/run-ui-tests:
           executor:
             name: android/android-machine
-            tag: 2024.09
+            tag: "2024.09"
             resource-class: xlarge
           filters:
             branches:
