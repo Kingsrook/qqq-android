@@ -6,9 +6,7 @@ orbs:
 
 jobs:
   unit-test:
-    executor:
-      name: android/android-docker
-      tag: "2024.09"
+    executor: android/android-machine
     steps:
       - checkout
       - android/restore-gradle-cache
@@ -31,10 +29,7 @@ jobs:
       system-image:
         type: string
         default: system-images;android-30;google_apis;x86
-    executor:
-      name: android/android-machine
-      resource-class: xlarge
-      tag: "2024.09"
+    executor: android/android-machine
     steps:
       - checkout
       - android/start-emulator-and-run-tests:
@@ -52,9 +47,7 @@ jobs:
           path: ~/test-results/junit
 
   benchmarks-ftl:
-    executor:
-      name: android/android-docker
-      tag: "2024.09-node"
+    executor: android/android-docker
     steps:
       - checkout
       - android/restore-gradle-cache
@@ -89,9 +82,7 @@ jobs:
           command: node scripts/eval_startup_benchmark_output.js
 
   release-build:
-    executor:
-      name: android/android-docker
-      tag: 2022.08.1
+    executor: android/android-docker
     steps:
       - checkout
       - android/restore-gradle-cache
@@ -107,10 +98,7 @@ workflows:
     jobs:
       - unit-test
       - android/run-ui-tests:
-          executor:
-            name: android/android-machine
-            tag: "2024.09"
-            resource-class: xlarge
+          executor: android/android-machine
           filters:
             branches:
               ignore: main # regular commits
