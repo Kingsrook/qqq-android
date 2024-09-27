@@ -6,7 +6,9 @@ orbs:
 
 jobs:
   unit-test:
-    executor: android/android-machine
+    executor:
+      name: android/android-machine
+      tag: default
     steps:
       - checkout
       - android/restore-gradle-cache
@@ -29,7 +31,9 @@ jobs:
       system-image:
         type: string
         default: system-images;android-30;google_apis;x86
-    executor: android/android-machine
+    executor:
+      name: android/android-machine
+      tag: default
     steps:
       - checkout
       - android/start-emulator-and-run-tests:
@@ -47,7 +51,9 @@ jobs:
           path: ~/test-results/junit
 
   benchmarks-ftl:
-    executor: android/android-docker
+    executor:
+      name: android/android-docker
+      tag: default
     steps:
       - checkout
       - android/restore-gradle-cache
@@ -82,7 +88,9 @@ jobs:
           command: node scripts/eval_startup_benchmark_output.js
 
   release-build:
-    executor: android/android-docker
+    executor:
+      name: android/android-docker
+      tag: default
     steps:
       - checkout
       - android/restore-gradle-cache
@@ -98,7 +106,9 @@ workflows:
     jobs:
       - unit-test
       - android/run-ui-tests:
-          executor: android/android-machine
+          executor:
+            name: android/android-machine
+            tag: default
           filters:
             branches:
               ignore: main # regular commits
