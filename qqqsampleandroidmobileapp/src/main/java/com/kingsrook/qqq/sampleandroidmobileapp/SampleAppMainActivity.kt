@@ -55,7 +55,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 /***************************************************************************
  **
  ***************************************************************************/
-class MainActivity : ComponentActivity()
+class SampleAppMainActivity : ComponentActivity()
 {
    /***************************************************************************
     **

@@ -3,7 +3,7 @@
 
    <uses-permission android:name="android.permission.INTERNET" />
 
-   <!-- todo do not commit the usesCleartextTraffic below - we don't want this long term! -->
+   <!-- Not clear if we want the usesCleartextTraffic below in the long term! -->
    <application
          android:name="com.kingsrook.qqq.frontend.android.mobileapp.QMobileApplication"
          android:allowBackup="true"
@@ -15,7 +15,7 @@
          android:theme="@style/Theme.AndroidDevProject">
 
       <activity
-            android:name=".MainActivity"
+            android:name=".SampleAppMainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.AndroidDevProject">
