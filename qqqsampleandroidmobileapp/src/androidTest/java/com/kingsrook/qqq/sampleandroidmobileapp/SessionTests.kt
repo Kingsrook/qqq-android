@@ -23,6 +23,8 @@ package com.kingsrook.qqq.sampleandroidmobileapp
 
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasText
@@ -162,6 +164,24 @@ class SessionTests : BaseTest()
    fun testUserInfoDialogAndLogout()
    {
       TestUtils.startStandardTest(composeTestRule)
+
+      openUserDialog()
+
+      composeTestRule
+         .onNodeWithText("Not currently logged in")
+         .assertIsDisplayed()
+
+      composeTestRule
+         .onNode(hasAnyAncestor(isDialog()) and hasText("Log Out"))
+         .assertIsDisplayed()
+         .assertIsNotEnabled()
+         .performClick()
+
+      composeTestRule
+         .onNode(hasAnyAncestor(isDialog()) and hasText("Dismiss"))
+         .assertIsDisplayed()
+         .performClick()
+
       TestUtils.login(composeTestRule)
 
       openUserDialog()
@@ -172,6 +192,7 @@ class SessionTests : BaseTest()
 
       composeTestRule
          .onNode(hasAnyAncestor(isDialog()) and hasText("Log Out"))
+         .assertIsEnabled()
          .performClick()
 
       composeTestRule

@@ -41,15 +41,22 @@ fun UserDialog(qViewModel: QViewModel, isUserDialogOpen: MutableState<Boolean>)
       icon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "User Information") },
       title = { Text("User Information") },
       text = {
-         Text("Current User:  ${qViewModel.sessionUserFullName}")
+         if(qViewModel.isAuthenticated)
+         {
+            Text("Current User:  ${qViewModel.sessionUserFullName}")
+         }
+         else
+         {
+            Text("Not currently logged in")
+         }
       },
       onDismissRequest = { isUserDialogOpen.value = false },
       dismissButton = { TextButton(onClick = { isUserDialogOpen.value = false }) { Text("Dismiss") } },
       confirmButton = {
          TextButton(onClick = {
-            qViewModel.requestLogout();
+            qViewModel.requestLogout()
             isUserDialogOpen.value = false
-         }) { Text("Log Out") }
+         }, enabled = qViewModel.isAuthenticated) { Text("Log Out") }
       }
    )
 }
