@@ -27,6 +27,7 @@ import com.kingsrook.qqq.frontend.android.core.model.metadata.QProcessMetaData
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.BaseAuthenticationMetaData
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.ManageSessionRequest
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.ManageSessionResponse
+import com.kingsrook.qqq.frontend.android.core.model.processes.ProcessStepResult
 
 /***************************************************************************
  ** interface that defines the interaction points we have with a QQQ backend.
@@ -44,5 +45,12 @@ interface QQQRepository
    suspend fun getMetaData(): QInstance
 
    suspend fun getProcessMetaData(processName: String): QProcessMetaData
+
+   suspend fun processInit(processName: String, formData: Map<String, Any?>): ProcessStepResult
+
+   suspend fun processStep(processName: String, processUUID: String, stepName: String, formData: Map<String, Any?>): ProcessStepResult
+
+   suspend fun processJobStatus(processName: String, processUUID: String, jobUUID: String): ProcessStepResult
+
 }
 

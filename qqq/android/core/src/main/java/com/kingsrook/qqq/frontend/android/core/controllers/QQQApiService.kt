@@ -26,6 +26,8 @@ import com.kingsrook.qqq.frontend.android.core.model.metadata.QProcessMetaDataWr
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.BaseAuthenticationMetaData
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.ManageSessionRequest
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.ManageSessionResponse
+import com.kingsrook.qqq.frontend.android.core.model.processes.ProcessStepResult
+import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -47,14 +49,38 @@ interface QQQApiService
    @POST("manageSession")
    suspend fun manageSession(@Body body: ManageSessionRequest): ManageSessionResponse
 
-   //////////////////
-   // qqq meta dta //
-   //////////////////
+   ///////////////////
+   // qqq meta data //
+   ///////////////////
    @GET("metaData")
    suspend fun getMetaData(): QInstance
 
+   ///////////////
+   // processes //
+   ///////////////
    @GET("/metaData/process/{processName}")
    suspend fun getProcessMetaData(@Path(value = "processName") processName: String): QProcessMetaDataWrapped
+
+   @POST("/processes/{processName}/init")
+   suspend fun processInit(
+      @Path(value = "processName") processName: String,
+      @Body body: RequestBody
+   ): ProcessStepResult
+
+   @POST("/processes/{processName}/{processUUID}/step/{stepName}")
+   suspend fun processStep(
+      @Path(value = "processName") processName: String,
+      @Path(value = "processUUID") processUUID: String,
+      @Path(value = "stepName") stepName: String,
+      @Body body: RequestBody
+   ): ProcessStepResult
+
+   @GET("/processes/{processName}/{processUUID}/status/{jobUUID}")
+   suspend fun processJobStatus(
+      @Path(value = "processName") processName: String,
+      @Path(value = "processUUID") processUUID: String,
+      @Path(value = "jobUUID") jobUUID: String,
+   ): ProcessStepResult
 
 }
 

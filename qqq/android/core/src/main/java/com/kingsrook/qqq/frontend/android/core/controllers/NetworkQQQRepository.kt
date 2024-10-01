@@ -28,10 +28,14 @@ import com.kingsrook.qqq.frontend.android.core.model.metadata.QProcessMetaData
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.BaseAuthenticationMetaData
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.ManageSessionRequest
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.ManageSessionResponse
+import com.kingsrook.qqq.frontend.android.core.model.processes.ProcessStepResult
 import kotlinx.serialization.json.Json
+import okhttp3.FormBody
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
+import okhttp3.RequestBody
 import okhttp3.Response
 import retrofit2.Retrofit
 import java.io.IOException
@@ -40,9 +44,7 @@ import java.io.IOException
 /***************************************************************************
  **
  ***************************************************************************/
-class NetworkQQQRepository(
-   private var baseUrl: String
-) : QQQRepository
+class NetworkQQQRepository(private var baseUrl: String) : QQQRepository
 {
    private val retroJson = Json { ignoreUnknownKeys = true }
 
@@ -121,6 +123,52 @@ class NetworkQQQRepository(
    override suspend fun getProcessMetaData(processName: String): QProcessMetaData
    {
       return qqqApiServiceMap[baseUrl]!!.getProcessMetaData(processName).process
+   }
+
+   /***************************************************************************
+    **
+    ***************************************************************************/
+   override suspend fun processInit(processName: String, formData: Map<String, Any?>): ProcessStepResult
+   {
+      return qqqApiServiceMap[baseUrl]!!.processInit(processName, formDataToRequestBody(formData))
+   }
+
+   /***************************************************************************
+    **
+    ***************************************************************************/
+   override suspend fun processStep(processName: String, processUUID: String, stepName: String, formData: Map<String, Any?>): ProcessStepResult
+   {
+      return qqqApiServiceMap[baseUrl]!!.processStep(processName, processUUID, stepName, formDataToRequestBody(formData))
+   }
+
+   /***************************************************************************
+    **
+    ***************************************************************************/
+   override suspend fun processJobStatus(processName: String, processUUID: String, jobUUID: String): ProcessStepResult
+   {
+      return qqqApiServiceMap[baseUrl]!!.processJobStatus(processName, processUUID, jobUUID)
+   }
+
+   /***************************************************************************
+    **
+    ***************************************************************************/
+   private fun formDataToRequestBody(formData: Map<String, Any?>): RequestBody
+   {
+      if(formData.isEmpty())
+      {
+         return FormBody.Builder().build()
+      }
+
+      val bodyBuilder = MultipartBody.Builder()
+         .setType(MultipartBody.FORM)
+
+      for(entry in formData.entries)
+      {
+         bodyBuilder.addFormDataPart(entry.key, entry.value.toString()) // ?! toString??
+      }
+
+      val requestBody: RequestBody = bodyBuilder.build()
+      return requestBody
    }
 
    /***************************************************************************

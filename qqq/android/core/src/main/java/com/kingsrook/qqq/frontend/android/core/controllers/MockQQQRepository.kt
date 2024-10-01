@@ -22,7 +22,8 @@
 package com.kingsrook.qqq.frontend.android.core.controllers
 
 import com.kingsrook.qqq.frontend.android.core.model.Environment
-import com.kingsrook.qqq.frontend.android.core.model.metadata.QAppMetaData
+import com.kingsrook.qqq.frontend.android.core.model.metadata.QAppNodeType
+import com.kingsrook.qqq.frontend.android.core.model.metadata.QAppTreeNode
 import com.kingsrook.qqq.frontend.android.core.model.metadata.QBrandingMetaData
 import com.kingsrook.qqq.frontend.android.core.model.metadata.QInstance
 import com.kingsrook.qqq.frontend.android.core.model.metadata.QProcessMetaData
@@ -30,6 +31,7 @@ import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.Bas
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.FullyAnonymousAuthenticationMetaData
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.ManageSessionRequest
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.ManageSessionResponse
+import com.kingsrook.qqq.frontend.android.core.model.processes.ProcessStepResult
 import java.util.UUID
 
 /***************************************************************************
@@ -91,8 +93,8 @@ class MockQQQRepository : QQQRepository
       return QInstance(
          branding = QBrandingMetaData(appName = appName),
          appTree = listOf(
-            QAppMetaData(name = "app1", label = "App 1"),
-            QAppMetaData(name = "app2", label = "App 2")
+            QAppTreeNode(name = "app1", label = "App 1", type = QAppNodeType.APP),
+            QAppTreeNode(name = "app2", label = "App 2", type = QAppNodeType.APP)
          ),
          processes = emptyMap(),
       )
@@ -104,5 +106,29 @@ class MockQQQRepository : QQQRepository
    override suspend fun getProcessMetaData(processName: String): QProcessMetaData
    {
       return QProcessMetaData(name = processName, label = processName)
+   }
+
+   /***************************************************************************
+    **
+    ***************************************************************************/
+   override suspend fun processInit(processName: String, formData: Map<String, Any?>): ProcessStepResult
+   {
+      TODO("Not yet implemented")
+   }
+
+   /***************************************************************************
+    **
+    ***************************************************************************/
+   override suspend fun processStep(processName: String, processUUID: String, stepName: String, formData: Map<String, Any?>): ProcessStepResult
+   {
+      TODO("Not yet implemented")
+   }
+
+   /***************************************************************************
+    **
+    ***************************************************************************/
+   override suspend fun processJobStatus(processName: String, processUUID: String, jobUUID: String): ProcessStepResult
+   {
+      TODO("Not yet implemented")
    }
 }
