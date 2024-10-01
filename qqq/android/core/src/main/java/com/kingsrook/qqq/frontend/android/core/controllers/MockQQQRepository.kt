@@ -90,12 +90,19 @@ class MockQQQRepository : QQQRepository
          appName += " 2"
       }
 
+      val env1AppTree = listOf(
+         QAppTreeNode(name = "app1", label = "App 1", type = QAppNodeType.APP),
+         QAppTreeNode(name = "app2", label = "App 2", type = QAppNodeType.APP)
+      )
+
+      val env2AppTree = listOf(
+         QAppTreeNode(name = "app3", label = "App 3", type = QAppNodeType.APP),
+         QAppTreeNode(name = "app4", label = "App 4", type = QAppNodeType.APP)
+      )
+
       return QInstance(
          branding = QBrandingMetaData(appName = appName),
-         appTree = listOf(
-            QAppTreeNode(name = "app1", label = "App 1", type = QAppNodeType.APP),
-            QAppTreeNode(name = "app2", label = "App 2", type = QAppNodeType.APP)
-         ),
+         appTree = if(environment.label == "Test Env 2") env2AppTree else env1AppTree,
          processes = emptyMap(),
       )
    }

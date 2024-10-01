@@ -61,7 +61,7 @@ fun QAppHome(qInstance: QInstance, modifier: Modifier = Modifier, app: QAppMetaD
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier
                .padding(bottom = 8.dp)
-               .testTag("qInstance.branding.appName")
+               .testTag("qInstance.appLabel")
          )
       }
 

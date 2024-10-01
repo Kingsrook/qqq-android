@@ -237,7 +237,11 @@ class SessionTests : BaseTest()
          .performClick()
 
       TestUtils.login(composeTestRule)
-      assertHomePageIsDisplayed("Mock Application 2")
+
+      ////////////////////////////////////////////////////////
+      // Test Env 2 has different apps than the default env //
+      ////////////////////////////////////////////////////////
+      assertHomePageIsDisplayed(anAppLabelOnPage = "App 3")
 
       atEndLocalDebugSleep()
    }
@@ -293,15 +297,15 @@ class SessionTests : BaseTest()
    /***************************************************************************
     **
     ***************************************************************************/
-   private fun assertHomePageIsDisplayed(appName: String = "Mock Application")
+   private fun assertHomePageIsDisplayed(pageTitle: String = "Home", anAppLabelOnPage: String = "App 1")
    {
       composeTestRule
-         .onNodeWithTag("qInstance.branding.appName")
-         .assertTextContains(appName)
+         .onNodeWithTag("qInstance.appLabel")
+         .assertTextContains(pageTitle)
          .assertIsDisplayed()
 
       composeTestRule
-         .onNodeWithText("App 1")
+         .onNodeWithText(anAppLabelOnPage)
          .assertIsDisplayed()
    }
 
