@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.BaseAuthenticationMetaData
+import com.kingsrook.qqq.frontend.android.mobileapp.ui.QNavigator
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.horseshoe.QApplicationWrapper
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.utils.LoadStateView
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.utils.Reloader
@@ -36,7 +37,7 @@ import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.QViewModel
  ** when needed, or a logout screen, else showing the app.
  ***************************************************************************/
 @Composable
-fun QAuthenticationWrapper(qViewModel: QViewModel, modifier: Modifier = Modifier)
+fun QAuthenticationWrapper(qViewModel: QViewModel, modifier: Modifier = Modifier, qNavigator: QNavigator? = null)
 {
    val isAuthenticated = qViewModel.isAuthenticated;
    val authenticationMetaDataLoadState = qViewModel.authenticationMetaDataLoadState;
@@ -60,7 +61,7 @@ fun QAuthenticationWrapper(qViewModel: QViewModel, modifier: Modifier = Modifier
          }
          else if(isAuthenticated)
          {
-            QApplicationWrapper(qViewModel, Modifier)
+            QApplicationWrapper(qViewModel, Modifier, qNavigator)
          }
          else
          {
