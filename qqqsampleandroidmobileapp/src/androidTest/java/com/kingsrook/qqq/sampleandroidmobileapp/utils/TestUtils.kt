@@ -28,7 +28,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.printToLog
-import com.kingsrook.qqq.frontend.android.core.controllers.MockQQQRepository
+import com.kingsrook.qqq.sampleandroidmobileapp.SampleAppMockQQQRepository
 import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.QViewModel
 import com.kingsrook.qqq.frontend.android.mobileapp.data.MockPreferencesDataStore
 import com.kingsrook.qqq.sampleandroidmobileapp.MainComposable
@@ -80,7 +80,7 @@ object TestUtils
    fun createQViewModel(): QViewModel
    {
       val dataStore = MockPreferencesDataStore()
-      val qViewModel = QViewModel(MockQQQRepository(), dataStore)
+      val qViewModel = QViewModel(SampleAppMockQQQRepository(), dataStore)
       return (qViewModel)
    }
 

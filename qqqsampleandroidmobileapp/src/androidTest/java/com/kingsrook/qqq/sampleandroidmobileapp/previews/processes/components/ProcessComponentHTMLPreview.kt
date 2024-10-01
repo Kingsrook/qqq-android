@@ -23,11 +23,10 @@ package com.kingsrook.qqq.sampleandroidmobileapp.previews.processes.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.kingsrook.qqq.frontend.android.core.controllers.MockQQQRepository
+import com.kingsrook.qqq.sampleandroidmobileapp.SampleAppMockQQQRepository
 import com.kingsrook.qqq.frontend.android.core.model.metadata.QComponentType
 import com.kingsrook.qqq.frontend.android.core.model.metadata.QFrontendComponent
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.processes.components.ProcessComponentHTML
-import com.kingsrook.qqq.frontend.android.mobileapp.ui.processes.components.UnsupportedProcessComponent
 import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.ProcessViewModel
 
 /***************************************************************************
@@ -37,7 +36,7 @@ import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.ProcessViewModel
 @Composable
 fun ProcessComponentHTMLPreview()
 {
-   val processViewModel = ProcessViewModel(MockQQQRepository())
+   val processViewModel = ProcessViewModel(SampleAppMockQQQRepository())
    processViewModel.activeStepName = "preview"
    processViewModel.processValues["preview.html"] = "oh <u>you're</u><br /><br /><span style='color: blue'>Beautiful!</span>";
    val component = QFrontendComponent(type = QComponentType.HTML)

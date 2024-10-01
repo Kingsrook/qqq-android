@@ -21,7 +21,7 @@
 
 package com.kingsrook.qqq.sampleandroidmobileapp.previews.utils
 
-import com.kingsrook.qqq.frontend.android.core.controllers.MockQQQRepository
+import com.kingsrook.qqq.sampleandroidmobileapp.SampleAppMockQQQRepository
 import com.kingsrook.qqq.frontend.android.core.model.Environment
 import com.kingsrook.qqq.frontend.android.mobileapp.container.QAppContainer
 import com.kingsrook.qqq.frontend.android.mobileapp.data.MockPreferencesDataStore
@@ -45,7 +45,7 @@ object PreviewUtils
       )
 
       val dataStore = MockPreferencesDataStore()
-      val qViewModel = QViewModel(MockQQQRepository(), dataStore)
+      val qViewModel = QViewModel(SampleAppMockQQQRepository(), dataStore)
       return (qViewModel)
    }
 }

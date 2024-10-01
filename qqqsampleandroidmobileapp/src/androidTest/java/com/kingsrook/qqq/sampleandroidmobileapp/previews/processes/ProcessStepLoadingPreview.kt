@@ -23,7 +23,7 @@ package com.kingsrook.qqq.sampleandroidmobileapp.previews.processes
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.kingsrook.qqq.frontend.android.core.controllers.MockQQQRepository
+import com.kingsrook.qqq.sampleandroidmobileapp.SampleAppMockQQQRepository
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.processes.ProcessStepLoading
 import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.ProcessViewModel
 
@@ -34,7 +34,7 @@ import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.ProcessViewModel
 @Composable
 fun ProcessStepLoadingPreview()
 {
-   val processViewModel = ProcessViewModel(MockQQQRepository())
+   val processViewModel = ProcessViewModel(SampleAppMockQQQRepository())
    ProcessStepLoading(processViewModel);
 }
 
@@ -45,7 +45,7 @@ fun ProcessStepLoadingPreview()
 @Composable
 fun ProcessStepLoadingPreviewWithMessageWithoutCurrentAndTotal()
 {
-   val processViewModel = ProcessViewModel(MockQQQRepository())
+   val processViewModel = ProcessViewModel(SampleAppMockQQQRepository())
    processViewModel.jobRunningMessage = "Working..."
    ProcessStepLoading(processViewModel);
 }
@@ -57,7 +57,7 @@ fun ProcessStepLoadingPreviewWithMessageWithoutCurrentAndTotal()
 @Composable
 fun ProcessStepLoadingPreviewSuperLongMessage()
 {
-   val processViewModel = ProcessViewModel(MockQQQRepository())
+   val processViewModel = ProcessViewModel(SampleAppMockQQQRepository())
    processViewModel.jobRunningMessage = "Doing a thing and stuff and words and more and and on and on."
    ProcessStepLoading(processViewModel);
 }
@@ -69,7 +69,7 @@ fun ProcessStepLoadingPreviewSuperLongMessage()
 @Composable
 fun ProcessStepLoadingPreviewWithMessageWithCurrentAndTotal()
 {
-   val processViewModel = ProcessViewModel(MockQQQRepository())
+   val processViewModel = ProcessViewModel(SampleAppMockQQQRepository())
    processViewModel.jobRunningMessage = "Processing Orders"
    processViewModel.currentOfTotalMessage = "3 of 2"
    ProcessStepLoading(processViewModel);

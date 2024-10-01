@@ -19,8 +19,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.kingsrook.qqq.frontend.android.core.controllers
+package com.kingsrook.qqq.sampleandroidmobileapp
 
+import com.kingsrook.qqq.frontend.android.core.controllers.QQQRepository
 import com.kingsrook.qqq.frontend.android.core.model.Environment
 import com.kingsrook.qqq.frontend.android.core.model.metadata.QAppNodeType
 import com.kingsrook.qqq.frontend.android.core.model.metadata.QAppTreeNode
@@ -37,7 +38,7 @@ import java.util.UUID
 /***************************************************************************
  **
  ***************************************************************************/
-class MockQQQRepository : QQQRepository
+class SampleAppMockQQQRepository : QQQRepository
 {
    private var sessionUUID: String? = null;
    private var environment: Environment = Environment("Mock Env", "https://mock/");
