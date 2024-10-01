@@ -39,8 +39,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import com.kingsrook.qqq.frontend.android.core.model.Environment
 import com.kingsrook.qqq.frontend.android.mobileapp.container.QAppContainer
+import com.kingsrook.qqq.frontend.android.mobileapp.ui.QNavigator
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.authentication.QAuth0Service
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.authentication.QAuthenticationWrapper
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.horseshoe.QNavigationDrawer
@@ -69,7 +71,7 @@ class SampleAppMainActivity : ComponentActivity()
          Environment("Production", "https://live.coldtrack.com/"),
          Environment("Staging", "https://live.coldtrack-staging.com/"),
          Environment("Development", "https://live.coldtrack-dev.com/"),
-         Environment("Local Dev", "http://192.168.4.70:8000/"),
+         Environment("Local Dev", "http://192.168.4.114:8000/"),
          Environment("Bad URL", "http://no.such.domain.dot.dot/"),
       )
 
@@ -86,36 +88,42 @@ class SampleAppMainActivity : ComponentActivity()
 }
 
 /***************************************************************************
- **
+ ** todo - move into mobileapp module
  ***************************************************************************/
 @Composable
 fun MainComposable(qViewModel: QViewModel)
 {
+   val navController = rememberNavController()
+   val qNavigator = QNavigator(navController)
+
    AndroidDevProjectTheme()
    {
       val topLevelAppState = TopLevelAppState(coroutineScope = rememberCoroutineScope(), qViewModel = qViewModel)
 
-      QNavigationDrawer(topLevelAppState)
-      {
-         Scaffold(
-            Modifier.fillMaxSize(),
-            topBar = { QTopAppBar(qViewModel, navMenuCallback = topLevelAppState::openNavDrawer) }
-         ) { innerPadding ->
-            Column(
+      // QNavigationDrawer(topLevelAppState)
+      // {
+
+      Scaffold(
+         Modifier.fillMaxSize(),
+         topBar = { QTopAppBar(qViewModel, navMenuCallback = topLevelAppState::openNavDrawer, title = "Sample App", qNavigator = qNavigator) }
+      ) { innerPadding ->
+         Column(
+            Modifier
+               .padding(innerPadding)
+               .fillMaxSize()
+         )
+         {
+            QAuthenticationWrapper(
+               qViewModel,
                Modifier
-                  .padding(innerPadding)
-                  .fillMaxSize()
+                  .padding(8.dp)
+                  .fillMaxSize(),
+               qNavigator = qNavigator,
             )
-            {
-               QAuthenticationWrapper(
-                  qViewModel,
-                  Modifier
-                     .padding(8.dp)
-                     .fillMaxSize()
-               )
-            }
          }
       }
+
+      // }
 
    }
 }

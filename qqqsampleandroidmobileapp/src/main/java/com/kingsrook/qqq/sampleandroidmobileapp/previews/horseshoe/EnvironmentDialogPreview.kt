@@ -19,59 +19,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.kingsrook.qqq.sampleandroidmobileapp.previews
+package com.kingsrook.qqq.sampleandroidmobileapp.previews.horseshoe
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
-
-import com.kingsrook.qqq.frontend.android.mobileapp.ui.horseshoe.UserDialog
+import com.kingsrook.qqq.frontend.android.mobileapp.ui.horseshoe.EnvironmentDialog
 import com.kingsrook.qqq.sampleandroidmobileapp.previews.utils.PreviewUtils
 
 /***************************************************************************
  **
  ***************************************************************************/
-@Preview(widthDp = 400)
+@Preview
 @Composable
-fun UserDialogPreviewNormal()
-{
-   val qViewModel = PreviewUtils.createQViewModel().also()
-   {
-      it.logInSuccessful()
-      it.sessionUserFullName = "John Doekhoff"
-   }
-   val isOpen = remember { mutableStateOf(true) }
-
-   UserDialog(qViewModel, isOpen)
-}
-
-/***************************************************************************
- **
- ***************************************************************************/
-@Preview(widthDp = 400)
-@Composable
-fun UserDialogPreviewSuperLongName()
-{
-   val qViewModel = PreviewUtils.createQViewModel().also()
-   {
-      it.logInSuccessful()
-      it.sessionUserFullName = "Testasuperlongnameandwheredoesitwraandwheredoesitwrappandwheredoesitwrap?"
-   }
-   val isOpen = remember { mutableStateOf(true) }
-
-   UserDialog(qViewModel, isOpen)
-}
-
-/***************************************************************************
- **
- ***************************************************************************/
-@Preview(widthDp = 400)
-@Composable
-fun UserDialogPreviewNotLoggedIn()
+fun EnvironmentDialogPreview()
 {
    val qViewModel = PreviewUtils.createQViewModel()
    val isOpen = remember { mutableStateOf(true) }
 
-   UserDialog(qViewModel, isOpen)
+   EnvironmentDialog(qViewModel, isOpen)
 }

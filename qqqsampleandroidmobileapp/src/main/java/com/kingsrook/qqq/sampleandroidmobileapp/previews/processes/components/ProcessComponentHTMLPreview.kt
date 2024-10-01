@@ -19,24 +19,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.kingsrook.qqq.sampleandroidmobileapp.previews
+package com.kingsrook.qqq.sampleandroidmobileapp.previews.processes.components
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
-import com.kingsrook.qqq.frontend.android.mobileapp.ui.horseshoe.EnvironmentDialog
-import com.kingsrook.qqq.sampleandroidmobileapp.previews.utils.PreviewUtils
+import com.kingsrook.qqq.frontend.android.core.controllers.MockQQQRepository
+import com.kingsrook.qqq.frontend.android.core.model.metadata.QComponentType
+import com.kingsrook.qqq.frontend.android.core.model.metadata.QFrontendComponent
+import com.kingsrook.qqq.frontend.android.mobileapp.ui.processes.components.ProcessComponentHTML
+import com.kingsrook.qqq.frontend.android.mobileapp.ui.processes.components.UnsupportedProcessComponent
+import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.ProcessViewModel
 
 /***************************************************************************
  **
  ***************************************************************************/
 @Preview
 @Composable
-fun EnvironmentDialogPreview()
+fun ProcessComponentHTMLPreview()
 {
-   val qViewModel = PreviewUtils.createQViewModel()
-   val isOpen = remember { mutableStateOf(true) }
-
-   EnvironmentDialog(qViewModel, isOpen)
+   val processViewModel = ProcessViewModel(MockQQQRepository())
+   processViewModel.activeStepName = "preview"
+   processViewModel.processValues["preview.html"] = "oh <u>you're</u><br /><br /><span style='color: blue'>Beautiful!</span>";
+   val component = QFrontendComponent(type = QComponentType.HTML)
+   ProcessComponentHTML(processViewModel, component);
 }
+
