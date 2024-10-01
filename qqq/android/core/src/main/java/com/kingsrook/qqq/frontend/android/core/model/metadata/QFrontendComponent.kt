@@ -21,6 +21,8 @@
 
 package com.kingsrook.qqq.frontend.android.core.model.metadata
 
+import com.kingsrook.qqq.frontend.android.core.model.AnyValueSerializer
+import com.kingsrook.qqq.frontend.android.core.model.MapOfStringAny
 import kotlinx.serialization.Serializable
 
 /***************************************************************************
@@ -29,8 +31,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class QFrontendComponent(
    val type: QComponentType,
-   val values: Map<String, String>? = emptyMap() // todo double-check type
+   val values: MapOfStringAny = emptyMap()
 )
-{
-
-}

@@ -21,6 +21,7 @@
 
 package com.kingsrook.qqq.frontend.android.core.model.metadata
 
+import com.kingsrook.qqq.frontend.android.core.model.MapOfStringAny
 import kotlinx.serialization.Serializable
 
 /***************************************************************************
@@ -29,7 +30,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class FieldAdornment(
    val type: AdornmentType,
-   val values: Map<String, String>?
+   val values: MapOfStringAny? = emptyMap()
 )
 {
 

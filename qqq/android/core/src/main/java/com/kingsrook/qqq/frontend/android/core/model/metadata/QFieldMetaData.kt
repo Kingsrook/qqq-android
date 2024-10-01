@@ -21,6 +21,7 @@
 
 package com.kingsrook.qqq.frontend.android.core.model.metadata
 
+import com.kingsrook.qqq.frontend.android.core.model.AnyValueSerializer
 import com.kingsrook.qqq.frontend.android.core.model.QPossibleValue
 import kotlinx.serialization.Serializable
 
@@ -31,13 +32,14 @@ import kotlinx.serialization.Serializable
 data class QFieldMetaData(
    val name: String,
    val label: String,
-   val defaultValue: String? = null,
+   @Serializable(with = AnyValueSerializer::class)
+   val defaultValue: Any? = null,
    val type: QFieldType,
    val isRequired: Boolean = false,
    val isEditable: Boolean = false,
    val isHeavy: Boolean = false,
    val possibleValueSourceName: String? = null,
-   val inlinePossibleValueSource: List<com.kingsrook.qqq.frontend.android.core.model.QPossibleValue>? = null,
+   val inlinePossibleValueSource: List<QPossibleValue>? = null,
    val displayFormat: String? = null,
    val adornments: List<FieldAdornment>? = null,
    val helpContents: List<QHelpContent>? = null,

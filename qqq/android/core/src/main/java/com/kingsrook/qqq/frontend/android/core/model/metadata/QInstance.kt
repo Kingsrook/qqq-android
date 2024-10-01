@@ -29,11 +29,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class QInstance(
    // todo val tables: Map<String, Any>?, // todo
-   val processes: Map<String, QProcessMetaData>?,
+   val processes: Map<String, QProcessMetaData>? = emptyMap(),
    // todo val reports: Map<String, Any>?, // todo
    // todo val widgets: Map<String, Any>?, // todo
    val apps: Map<String, QAppMetaData>? = emptyMap(),
-   val appTree: List<QAppMetaData> = emptyList(),
+   val appTree: List<QAppTreeNode> = emptyList(),
    val branding: QBrandingMetaData? = QBrandingMetaData(),
    val environmentValues: Map<String, String?> = emptyMap(),
    val helpContent: Map<String, List<QHelpContent>>? = emptyMap(),

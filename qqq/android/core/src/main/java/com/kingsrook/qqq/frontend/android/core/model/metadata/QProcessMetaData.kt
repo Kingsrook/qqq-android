@@ -34,6 +34,7 @@ data class QProcessMetaData(
    val isHidden: Boolean = false,
    val frontendSteps: List<QFrontendStepMetaData>? = emptyList(),
    val hasPermission: Boolean = false,
+   val stepFlow: String = "LINEAR",
 )
 {
 }

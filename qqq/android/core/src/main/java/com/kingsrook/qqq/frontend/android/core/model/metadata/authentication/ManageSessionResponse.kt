@@ -21,8 +21,8 @@
 
 package com.kingsrook.qqq.frontend.android.core.model.metadata.authentication
 
+import com.kingsrook.qqq.frontend.android.core.model.MapOfStringAny
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonObject
 
 /***************************************************************************
  **
@@ -30,7 +30,7 @@ import kotlinx.serialization.json.JsonObject
 @Serializable
 data class ManageSessionResponse(
    val uuid: String,
-   val values: JsonObject = JsonObject(emptyMap())
+   val values: MapOfStringAny = emptyMap(),
 )
 {
 }
