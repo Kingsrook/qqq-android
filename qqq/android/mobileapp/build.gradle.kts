@@ -1,6 +1,8 @@
 plugins {
    alias(libs.plugins.android.library)
    alias(libs.plugins.kotlin.android)
+   kotlin("plugin.serialization")
+   id("kotlinx-serialization")
 }
 
 /*
@@ -14,10 +16,10 @@ composeOptions {
 
 android {
    namespace = "com.kingsrook.qqq.frontend.android.mobileapp"
-   compileSdk = 34
+   compileSdk = 35
 
    defaultConfig {
-      minSdk = 24
+      minSdk = 26
 
       testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
       consumerProguardFiles("consumer-rules.pro")
@@ -56,14 +58,17 @@ dependencies {
    implementation(libs.androidx.ui.android)
    implementation(libs.androidx.material3.android)
    implementation(libs.androidx.ui.tooling.preview.android)
+   implementation(libs.androidx.navigation.compose)
    testImplementation(libs.junit)
    androidTestImplementation(libs.androidx.junit)
    androidTestImplementation(libs.androidx.espresso.core)
 
-   implementation(project(":qqq:android:core"))
-   implementation(libs.auth0)
-
+   // Kotlin serialization
    implementation(libs.kotlinx.serialization.json)
+
    implementation(libs.androidx.datastore.preferences)
    implementation(libs.androidx.datastore)
+
+   implementation(project(":qqq:android:core"))
+   implementation(libs.auth0)
 }

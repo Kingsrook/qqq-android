@@ -26,12 +26,12 @@ plugins {
 
 android {
    namespace = "com.kingsrook.qqq.sampleandroidmobileapp"
-   compileSdk = 34
+   compileSdk = 35
 
    defaultConfig {
       applicationId = "com.kingsrook.qqq.sampleandroidmobileapp"
-      minSdk = 24
-      targetSdk = 34
+      minSdk = 26
+      targetSdk = 35
       versionCode = 1
       versionName = "1.0"
 
@@ -39,10 +39,6 @@ android {
       vectorDrawables {
          useSupportLibrary = true
       }
-
-      // todo do not commit must not hard-code
-      manifestPlaceholders["auth0Domain"] = "auth.coldtrack-dev.com"
-      manifestPlaceholders["auth0Scheme"] = "qqqsampleapp"
    }
 
    buildTypes {
@@ -84,6 +80,7 @@ dependencies {
    implementation(project(":qqq:android:mobileapp"))
    implementation(project(":qqq:android:core"))
    implementation(libs.auth0)
+   implementation(libs.androidx.navigation.compose)
    testImplementation(libs.junit)
    androidTestImplementation(libs.androidx.junit)
    androidTestImplementation(libs.androidx.espresso.core)

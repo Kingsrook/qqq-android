@@ -7,10 +7,10 @@ plugins {
 
 android {
    namespace = "com.kingsrook.qqq.frontend.android.core"
-   compileSdk = 34
+   compileSdk = 35
 
    defaultConfig {
-      minSdk = 24
+      minSdk = 26
 
       testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
       consumerProguardFiles("consumer-rules.pro")
@@ -51,4 +51,6 @@ dependencies {
    // Retrofit with Kotlin serialization Converter
    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+
+   implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.20")
 }
