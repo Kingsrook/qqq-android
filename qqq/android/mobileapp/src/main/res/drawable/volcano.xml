@@ -1,0 +1,40 @@
+<!--
+  ~ QQQ - Low-code Application Framework for Engineers.
+  ~ Copyright (C) 2004-2024.  Kingsrook, LLC
+  ~ 651 N Broad St Ste 205 # 6917 | Middletown DE 19709 | United States
+  ~ contact@kingsrook.com
+  ~ https://github.com/Kingsrook/
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M18,8l-7,0l-2,5l-3,0l-4,9l20,0z"/>
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M13,1h2v4h-2z"/>
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M16.121,5.468l2.828,-2.828l1.414,1.414l-2.828,2.828z"/>
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M7.64,4.05l1.414,-1.414l2.828,2.828l-1.414,1.414z"/>
+</vector>

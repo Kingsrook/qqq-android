@@ -1,0 +1,43 @@
+<!--
+  ~ QQQ - Low-code Application Framework for Engineers.
+  ~ Copyright (C) 2004-2024.  Kingsrook, LLC
+  ~ 651 N Broad St Ste 205 # 6917 | Middletown DE 19709 | United States
+  ~ contact@kingsrook.com
+  ~ https://github.com/Kingsrook/
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M12.16,3l-0.32,0l-2.63,5.25l5.58,0z"/>
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M16.46,8.25l5.16,0l-2.62,-5.25l-5.16,0z"/>
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M21.38,9.75l-8.63,0l0,10.35z"/>
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M11.25,20.1l0,-10.35l-8.63,0z"/>
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M7.54,8.25l2.62,-5.25l-5.16,0l-2.62,5.25z"/>
+</vector>
