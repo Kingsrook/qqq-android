@@ -1,6 +1,6 @@
 /*
  * QQQ - Low-code Application Framework for Engineers.
- * Copyright (C) 2024-2024.  Kingsrook, LLC
+ * Copyright (C) 2004-2024.  Kingsrook, LLC
  * 651 N Broad St Ste 205 # 6917 | Middletown DE 19709 | United States
  * contact@kingsrook.com
  * https://github.com/Kingsrook/
@@ -17,6 +17,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 package com.kingsrook.qqq.sampleandroidmobileapp.previews.processes
@@ -34,8 +35,9 @@ import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.ProcessViewModel
 @Composable
 fun ProcessStepLoadingPreview()
 {
-   val processViewModel = ProcessViewModel(SampleAppMockQQQRepository())
-   ProcessStepLoading(processViewModel);
+   val processViewModel = ProcessViewModel()
+   processViewModel.qqqRepository = SampleAppMockQQQRepository()
+   ProcessStepLoading(processViewModel)
 }
 
 /***************************************************************************
@@ -45,9 +47,10 @@ fun ProcessStepLoadingPreview()
 @Composable
 fun ProcessStepLoadingPreviewWithMessageWithoutCurrentAndTotal()
 {
-   val processViewModel = ProcessViewModel(SampleAppMockQQQRepository())
+   val processViewModel = ProcessViewModel()
+   processViewModel.qqqRepository = SampleAppMockQQQRepository()
    processViewModel.jobRunningMessage = "Working..."
-   ProcessStepLoading(processViewModel);
+   ProcessStepLoading(processViewModel)
 }
 
 /***************************************************************************
@@ -57,9 +60,10 @@ fun ProcessStepLoadingPreviewWithMessageWithoutCurrentAndTotal()
 @Composable
 fun ProcessStepLoadingPreviewSuperLongMessage()
 {
-   val processViewModel = ProcessViewModel(SampleAppMockQQQRepository())
+   val processViewModel = ProcessViewModel()
+   processViewModel.qqqRepository = SampleAppMockQQQRepository()
    processViewModel.jobRunningMessage = "Doing a thing and stuff and words and more and and on and on."
-   ProcessStepLoading(processViewModel);
+   ProcessStepLoading(processViewModel)
 }
 
 /***************************************************************************
@@ -69,9 +73,10 @@ fun ProcessStepLoadingPreviewSuperLongMessage()
 @Composable
 fun ProcessStepLoadingPreviewWithMessageWithCurrentAndTotal()
 {
-   val processViewModel = ProcessViewModel(SampleAppMockQQQRepository())
+   val processViewModel = ProcessViewModel()
+   processViewModel.qqqRepository = SampleAppMockQQQRepository()
    processViewModel.jobRunningMessage = "Processing Orders"
    processViewModel.currentOfTotalMessage = "3 of 2"
-   ProcessStepLoading(processViewModel);
+   ProcessStepLoading(processViewModel)
 }
 

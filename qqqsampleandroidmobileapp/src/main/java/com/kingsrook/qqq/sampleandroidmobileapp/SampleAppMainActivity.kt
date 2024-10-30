@@ -1,6 +1,6 @@
 /*
  * QQQ - Low-code Application Framework for Engineers.
- * Copyright (C) 2024-2024.  Kingsrook, LLC
+ * Copyright (C) 2004-2024.  Kingsrook, LLC
  * 651 N Broad St Ste 205 # 6917 | Middletown DE 19709 | United States
  * contact@kingsrook.com
  * https://github.com/Kingsrook/
@@ -17,6 +17,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 package com.kingsrook.qqq.sampleandroidmobileapp
@@ -26,33 +27,18 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.painterResource
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.rememberNavController
 import com.kingsrook.qqq.frontend.android.core.model.Environment
+import com.kingsrook.qqq.frontend.android.mobileapp.QMobileAppMain
 import com.kingsrook.qqq.frontend.android.mobileapp.container.QAppContainer
-import com.kingsrook.qqq.frontend.android.mobileapp.ui.QNavigator
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.authentication.QAuth0Service
-import com.kingsrook.qqq.frontend.android.mobileapp.ui.authentication.QAuthenticationWrapper
-import com.kingsrook.qqq.frontend.android.mobileapp.ui.horseshoe.QNavigationDrawer
-import com.kingsrook.qqq.frontend.android.mobileapp.ui.horseshoe.QTopAppBar
 import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.QViewModel
-import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.TopLevelAppState
-import com.kingsrook.qqq.sampleandroidmobileapp.ui.theme.AndroidDevProjectTheme
-
-
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+import com.kingsrook.qqq.sampleandroidmobileapp.ui.theme.AppTheme
 
 /***************************************************************************
  **
@@ -64,68 +50,43 @@ class SampleAppMainActivity : ComponentActivity()
     ***************************************************************************/
    override fun onCreate(savedInstanceState: Bundle?)
    {
-      super.onCreate(savedInstanceState);
-
-      QAuth0Service.scheme = "qqqsampleapp";
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      // configure your application:                                                             //
+      // title: text displayed in topAppBar                                                      //
+      // scheme: unique identifier for your app, used by URL-scheme-based callbacks              //
+      // availableEnvironments: list of Environments - labels & Urls of your application servers //
+      // applicationName: name sent to your backend server to identify this frontend application //
+      // applicationVersion: version that accompanies applicationName.                           //
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      val title = "Sample App"
+      QAuth0Service.scheme = "qqqsampleapp"
       QAppContainer.availableEnvironments = listOf(
          Environment("Production", "https://live.coldtrack.com/"),
          Environment("Staging", "https://live.coldtrack-staging.com/"),
          Environment("Development", "https://live.coldtrack-dev.com/"),
-         Environment("Local Dev", "http://192.168.4.114:8000/"),
+         Environment("Local Dev", "http://192.168.4.122:8000/"),
          Environment("Bad URL", "http://no.such.domain.dot.dot/"),
       )
+      QViewModel.applicationName = "qqqSampleApp"
+      QViewModel.applicationVersion = "0.1"
+      val splashResourceId: Int? = null // R.drawable.coldtrack_logo_icon_gradient_800
 
+      ///////////////////////////////////////////////////////////
+      // boilerplate - paste in below your app's configuration //
+      ///////////////////////////////////////////////////////////
+      super.onCreate(savedInstanceState)
       enableEdgeToEdge()
       setContent()
       {
-         // todo - this should come from the Container / DI (i think?)
-         QViewModel.dataStore = LocalContext.current.dataStore;
+         QViewModel.dataStore = LocalContext.current.dataStore
          val qViewModel: QViewModel = viewModel(factory = QViewModel.factory)
 
-         MainComposable(qViewModel)
-      }
-   }
-}
-
-/***************************************************************************
- ** todo - move into mobileapp module
- ***************************************************************************/
-@Composable
-fun MainComposable(qViewModel: QViewModel)
-{
-   val navController = rememberNavController()
-   val qNavigator = QNavigator(navController)
-
-   AndroidDevProjectTheme()
-   {
-      val topLevelAppState = TopLevelAppState(coroutineScope = rememberCoroutineScope(), qViewModel = qViewModel)
-
-      // QNavigationDrawer(topLevelAppState)
-      // {
-
-      Scaffold(
-         Modifier.fillMaxSize(),
-         topBar = { QTopAppBar(qViewModel, navMenuCallback = topLevelAppState::openNavDrawer, title = "Sample App", qNavigator = qNavigator) }
-      ) { innerPadding ->
-         Column(
-            Modifier
-               .padding(innerPadding)
-               .fillMaxSize()
-         )
+         AppTheme()
          {
-            QAuthenticationWrapper(
-               qViewModel,
-               Modifier
-                  .padding(8.dp)
-                  .fillMaxSize(),
-               qNavigator = qNavigator,
-            )
+            QMobileAppMain(qViewModel, title = title, if(splashResourceId == null) null else painterResource(splashResourceId))
          }
       }
-
-      // }
-
    }
 }
 
-
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")

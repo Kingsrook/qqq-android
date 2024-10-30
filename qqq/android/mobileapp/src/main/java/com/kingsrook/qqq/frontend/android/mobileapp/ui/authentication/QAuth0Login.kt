@@ -1,6 +1,6 @@
 /*
  * QQQ - Low-code Application Framework for Engineers.
- * Copyright (C) 2024-2024.  Kingsrook, LLC
+ * Copyright (C) 2004-2024.  Kingsrook, LLC
  * 651 N Broad St Ste 205 # 6917 | Middletown DE 19709 | United States
  * contact@kingsrook.com
  * https://github.com/Kingsrook/
@@ -17,6 +17,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 package com.kingsrook.qqq.frontend.android.mobileapp.ui.authentication
@@ -49,13 +50,13 @@ import kotlinx.coroutines.delay
 private const val TAG = "QAuth0Form"
 
 /***************************************************************************
- **
+ ** form for logging in using auth0
  ***************************************************************************/
 @Composable
 fun QAuth0Login(qViewModel: QViewModel, modifier: Modifier = Modifier)
 {
    val authenticationMetaData = (qViewModel.authenticationMetaDataLoadState as LoadState.Success<BaseAuthenticationMetaData>).value as Auth0AuthenticationMetaData
-   val auth0Instance: Auth0 = QAuth0Service.makeAuth0Instance(qViewModel);
+   val auth0Instance: Auth0 = QAuth0Service.makeAuth0Instance(qViewModel)
 
    val auth0Success = remember { mutableStateOf(false) }
    val auth0Failure = remember { mutableStateOf(false) }
@@ -70,7 +71,7 @@ fun QAuth0Login(qViewModel: QViewModel, modifier: Modifier = Modifier)
          Log.w(TAG, "Auth0 Called back to failure", error)
          error.printStackTrace()
          qViewModel.logInFailed()
-         auth0Failure.value = true;
+         auth0Failure.value = true
       }
 
       /***************************************************************************
@@ -79,9 +80,9 @@ fun QAuth0Login(qViewModel: QViewModel, modifier: Modifier = Modifier)
       override fun onSuccess(result: Credentials)
       {
          Log.d(TAG, "Auth0 Called back success, accessToken: ${result.accessToken.firstN(8)}")
-         auth0Success.value = true;
+         auth0Success.value = true
 
-         qViewModel.doSetSessionUserFullName(result.user.nickname ?: "Unknown");
+         qViewModel.doSetSessionUserFullName(result.user.nickname ?: "Unknown")
          qViewModel.manageSession(result.accessToken)
       }
    }
@@ -164,7 +165,7 @@ fun QAuth0Login(qViewModel: QViewModel, modifier: Modifier = Modifier)
       Log.d(TAG, "Going to Auth0 login (WebAuthProvider)")
       WebAuthProvider
          .login(auth0Instance)
-         .withAudience(authenticationMetaData.audience)
+         .withAudience(authenticationMetaData.values.audience)
          .withScheme(QAuth0Service.scheme)
          .start(LocalContext.current, callback)
    }

@@ -1,6 +1,6 @@
 /*
  * QQQ - Low-code Application Framework for Engineers.
- * Copyright (C) 2024-2024.  Kingsrook, LLC
+ * Copyright (C) 2004-2024.  Kingsrook, LLC
  * 651 N Broad St Ste 205 # 6917 | Middletown DE 19709 | United States
  * contact@kingsrook.com
  * https://github.com/Kingsrook/
@@ -17,12 +17,13 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 package com.kingsrook.qqq.frontend.android.core.controllers
 
 import com.kingsrook.qqq.frontend.android.core.model.metadata.QInstance
-import com.kingsrook.qqq.frontend.android.core.model.metadata.QProcessMetaDataWrapped
+import com.kingsrook.qqq.frontend.android.core.model.metadata.QProcessMetaData
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.BaseAuthenticationMetaData
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.ManageSessionRequest
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.ManageSessionResponse
@@ -32,7 +33,9 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
+const val BASE_PATH = "/qqq/v1/"
 
 /***************************************************************************
  ** Class (interface?) that instructs retrofit how to make HTTP requests
@@ -43,31 +46,36 @@ interface QQQApiService
    //////////////////////////////
    // authentication endpoints //
    //////////////////////////////
-   @GET("metaData/authentication")
+   @GET(BASE_PATH + "metaData/authentication")
    suspend fun getAuthenticationMetaData(): BaseAuthenticationMetaData
 
-   @POST("manageSession")
+   @POST(BASE_PATH + "manageSession")
    suspend fun manageSession(@Body body: ManageSessionRequest): ManageSessionResponse
 
    ///////////////////
    // qqq meta data //
    ///////////////////
-   @GET("metaData")
-   suspend fun getMetaData(): QInstance
+   @GET(BASE_PATH + "metaData")
+   suspend fun getMetaData(
+      @Query("frontendName") frontendName: String,
+      @Query("frontendVersion") frontendVersion: String,
+      @Query("applicationName") applicationName: String,
+      @Query("applicationVersion") applicationVersion: String,
+   ): QInstance
 
    ///////////////
    // processes //
    ///////////////
-   @GET("/metaData/process/{processName}")
-   suspend fun getProcessMetaData(@Path(value = "processName") processName: String): QProcessMetaDataWrapped
+   @GET(BASE_PATH + "metaData/process/{processName}")
+   suspend fun getProcessMetaData(@Path(value = "processName") processName: String): QProcessMetaData
 
-   @POST("/processes/{processName}/init")
+   @POST(BASE_PATH + "processes/{processName}/init")
    suspend fun processInit(
       @Path(value = "processName") processName: String,
       @Body body: RequestBody
    ): ProcessStepResult
 
-   @POST("/processes/{processName}/{processUUID}/step/{stepName}")
+   @POST(BASE_PATH + "processes/{processName}/{processUUID}/step/{stepName}")
    suspend fun processStep(
       @Path(value = "processName") processName: String,
       @Path(value = "processUUID") processUUID: String,
@@ -75,12 +83,15 @@ interface QQQApiService
       @Body body: RequestBody
    ): ProcessStepResult
 
-   @GET("/processes/{processName}/{processUUID}/status/{jobUUID}")
+   @GET(BASE_PATH + "processes/{processName}/{processUUID}/status/{jobUUID}")
    suspend fun processJobStatus(
       @Path(value = "processName") processName: String,
       @Path(value = "processUUID") processUUID: String,
       @Path(value = "jobUUID") jobUUID: String,
    ): ProcessStepResult
+
+   @GET(BASE_PATH + "{path}")
+   suspend fun resource(@Path(value = "path") path: String): ByteArray?
 
 }
 

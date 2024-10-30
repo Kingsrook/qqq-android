@@ -1,6 +1,6 @@
 /*
  * QQQ - Low-code Application Framework for Engineers.
- * Copyright (C) 2024-2024.  Kingsrook, LLC
+ * Copyright (C) 2004-2024.  Kingsrook, LLC
  * 651 N Broad St Ste 205 # 6917 | Middletown DE 19709 | United States
  * contact@kingsrook.com
  * https://github.com/Kingsrook/
@@ -17,6 +17,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 package com.kingsrook.qqq.frontend.android.mobileapp.ui.authentication
@@ -29,13 +30,13 @@ import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.QViewModel
 
 
 /***************************************************************************
- **
+ ** class to work with auth0
  ***************************************************************************/
 object QAuth0Service
 {
-   lateinit var scheme: String;
+   lateinit var scheme: String
 
-   private const val TAG = "QAuth0Service";
+   private const val TAG = "QAuth0Service"
 
    /***************************************************************************
     **
@@ -51,10 +52,10 @@ object QAuth0Service
       {
          is LoadState.Success ->
          {
-            val authenticationMetaData = loadState.value as Auth0AuthenticationMetaData;
-            val auth0Instance: Auth0 = Auth0.getInstance(authenticationMetaData.clientId, authenticationMetaData.baseUrl)
+            val authenticationMetaData = loadState.value as Auth0AuthenticationMetaData
+            val auth0Instance: Auth0 = Auth0.getInstance(authenticationMetaData.values.clientId, authenticationMetaData.values.baseUrl)
             Log.d(TAG, "clientId: ${auth0Instance.clientId}, domain: ${auth0Instance.domain}")
-            return auth0Instance;
+            return auth0Instance
          }
 
          else ->

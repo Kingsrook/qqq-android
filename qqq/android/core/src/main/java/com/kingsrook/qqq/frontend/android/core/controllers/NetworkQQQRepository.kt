@@ -1,6 +1,6 @@
 /*
  * QQQ - Low-code Application Framework for Engineers.
- * Copyright (C) 2024-2024.  Kingsrook, LLC
+ * Copyright (C) 2004-2024.  Kingsrook, LLC
  * 651 N Broad St Ste 205 # 6917 | Middletown DE 19709 | United States
  * contact@kingsrook.com
  * https://github.com/Kingsrook/
@@ -17,6 +17,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 package com.kingsrook.qqq.frontend.android.core.controllers
@@ -30,13 +31,13 @@ import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.Man
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.ManageSessionResponse
 import com.kingsrook.qqq.frontend.android.core.model.processes.ProcessStepResult
 import kotlinx.serialization.json.Json
-import okhttp3.FormBody
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import okhttp3.Response
+import org.json.JSONObject
 import retrofit2.Retrofit
 import java.io.IOException
 
@@ -59,12 +60,12 @@ class NetworkQQQRepository(private var baseUrl: String) : QQQRepository
 
       if(qqqApiServiceMap[baseUrl] == null)
       {
-         val thisRetrofit = buildRetrofit(baseUrl);
+         val thisRetrofit = buildRetrofit(baseUrl)
          val thisQQQApiService = thisRetrofit.create(QQQApiService::class.java)
-         qqqApiServiceMap[baseUrl] = thisQQQApiService;
+         qqqApiServiceMap[baseUrl] = thisQQQApiService
       }
 
-      // retrofit = buildRetrofit();
+      // retrofit = buildRetrofit()
       // retrofit.create(QQQApiService::class.java)
    }
 
@@ -89,7 +90,7 @@ class NetworkQQQRepository(private var baseUrl: String) : QQQRepository
     ***************************************************************************/
    override fun setSessionUUID(sessionUUID: String)
    {
-      SessionCookieInterceptor.sessionUUID = sessionUUID;
+      SessionCookieInterceptor.sessionUUID = sessionUUID
    }
 
    /***************************************************************************
@@ -112,9 +113,11 @@ class NetworkQQQRepository(private var baseUrl: String) : QQQRepository
    /***************************************************************************
     **
     ***************************************************************************/
-   override suspend fun getMetaData(): QInstance
+   override suspend fun getMetaData(
+      frontendName: String, frontendVersion: String, applicationName: String, applicationVersion: String
+   ): QInstance
    {
-      return qqqApiServiceMap[baseUrl]!!.getMetaData()
+      return qqqApiServiceMap[baseUrl]!!.getMetaData(frontendName, frontendVersion, applicationName, applicationVersion)
    }
 
    /***************************************************************************
@@ -122,23 +125,23 @@ class NetworkQQQRepository(private var baseUrl: String) : QQQRepository
     ***************************************************************************/
    override suspend fun getProcessMetaData(processName: String): QProcessMetaData
    {
-      return qqqApiServiceMap[baseUrl]!!.getProcessMetaData(processName).process
+      return qqqApiServiceMap[baseUrl]!!.getProcessMetaData(processName)
    }
 
    /***************************************************************************
     **
     ***************************************************************************/
-   override suspend fun processInit(processName: String, formData: Map<String, Any?>): ProcessStepResult
+   override suspend fun processInit(processName: String, values: Map<String, Any?>, recordsParam: String?, recordIds: String?, filterJSON: String?, stepTimeoutMillis: Int?): ProcessStepResult
    {
-      return qqqApiServiceMap[baseUrl]!!.processInit(processName, formDataToRequestBody(formData))
+      return qqqApiServiceMap[baseUrl]!!.processInit(processName, buildProcessInitOrStepRequestBodyV1(values, recordsParam, recordIds, filterJSON, stepTimeoutMillis))
    }
 
    /***************************************************************************
     **
     ***************************************************************************/
-   override suspend fun processStep(processName: String, processUUID: String, stepName: String, formData: Map<String, Any?>): ProcessStepResult
+   override suspend fun processStep(processName: String, processUUID: String, stepName: String, values: Map<String, Any?>, stepTimeoutMillis: Int?): ProcessStepResult
    {
-      return qqqApiServiceMap[baseUrl]!!.processStep(processName, processUUID, stepName, formDataToRequestBody(formData))
+      return qqqApiServiceMap[baseUrl]!!.processStep(processName, processUUID, stepName, buildProcessInitOrStepRequestBodyV1(values, stepTimeoutMillis = stepTimeoutMillis))
    }
 
    /***************************************************************************
@@ -152,19 +155,39 @@ class NetworkQQQRepository(private var baseUrl: String) : QQQRepository
    /***************************************************************************
     **
     ***************************************************************************/
-   private fun formDataToRequestBody(formData: Map<String, Any?>): RequestBody
+   private fun buildProcessInitOrStepRequestBodyV1(values: Map<String, Any?>, recordsParam: String? = null, recordIds: String? = null, filterJSON: String? = null, stepTimeoutMillis: Int? = null): RequestBody
    {
-      if(formData.isEmpty())
-      {
-         return FormBody.Builder().build()
-      }
-
       val bodyBuilder = MultipartBody.Builder()
          .setType(MultipartBody.FORM)
 
-      for(entry in formData.entries)
+      if(!values.isEmpty())
       {
-         bodyBuilder.addFormDataPart(entry.key, entry.value.toString()) // ?! toString??
+         val valuesJson = JSONObject()
+         for(entry in values.entries)
+         {
+            valuesJson.put(entry.key, entry.value)
+         }
+         bodyBuilder.addFormDataPart("values", valuesJson.toString())
+      }
+
+      if(recordsParam != null)
+      {
+         bodyBuilder.addFormDataPart("recordsParam", recordsParam)
+      }
+
+      if(recordIds != null)
+      {
+         bodyBuilder.addFormDataPart("recordIds", recordIds)
+      }
+
+      if(filterJSON != null)
+      {
+         bodyBuilder.addFormDataPart("filterJSON", filterJSON)
+      }
+
+      if(stepTimeoutMillis != null)
+      {
+         bodyBuilder.addFormDataPart("stepTimeoutMillis", stepTimeoutMillis.toString())
       }
 
       val requestBody: RequestBody = bodyBuilder.build()
@@ -174,9 +197,25 @@ class NetworkQQQRepository(private var baseUrl: String) : QQQRepository
    /***************************************************************************
     **
     ***************************************************************************/
+   override suspend fun resource(path: String): ByteArray?
+   {
+      return qqqApiServiceMap[baseUrl]!!.resource(path)
+   }
+
+   /***************************************************************************
+    **
+    ***************************************************************************/
+   override fun getURI(path: String): String
+   {
+      return "${baseUrl.replaceFirst(Regex("/*$"), "/")}${path.replaceFirst(Regex("^/+"), "")}"
+   }
+
+   /***************************************************************************
+    **
+    ***************************************************************************/
    companion object SessionCookieInterceptor : Interceptor
    {
-      private var sessionUUID: String? = null;
+      private var sessionUUID: String? = null
 
       @Throws(IOException::class)
       override fun intercept(chain: Interceptor.Chain): Response

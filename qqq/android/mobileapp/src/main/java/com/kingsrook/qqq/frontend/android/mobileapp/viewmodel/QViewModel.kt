@@ -1,6 +1,6 @@
 /*
  * QQQ - Low-code Application Framework for Engineers.
- * Copyright (C) 2024-2024.  Kingsrook, LLC
+ * Copyright (C) 2004-2024.  Kingsrook, LLC
  * 651 N Broad St Ste 205 # 6917 | Middletown DE 19709 | United States
  * contact@kingsrook.com
  * https://github.com/Kingsrook/
@@ -17,6 +17,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 package com.kingsrook.qqq.frontend.android.mobileapp.viewmodel
@@ -36,7 +37,6 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.kingsrook.qqq.frontend.android.core.controllers.QQQRepository
 import com.kingsrook.qqq.frontend.android.core.model.Environment
 import com.kingsrook.qqq.frontend.android.core.model.metadata.QInstance
-import com.kingsrook.qqq.frontend.android.core.model.metadata.QProcessMetaData
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.BaseAuthenticationMetaData
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.ManageSessionRequest
 import com.kingsrook.qqq.frontend.android.core.model.metadata.authentication.ManageSessionResponse
@@ -51,10 +51,12 @@ import kotlinx.coroutines.launch
 private const val TAG = "QViewModel"
 
 /***************************************************************************
- **
+ ** Main view-model for the QQQ Mobile app:
+ ** - high-level data, e.g., what environment, its auth meta-data and instance
+ ** - user/session level status/data
  ***************************************************************************/
 open class QViewModel(
-   private val qqqRepository: QQQRepository,
+   val qqqRepository: QQQRepository,
    private val dataStore: DataStore<Preferences>
 ) : ViewModel()
 {
@@ -81,7 +83,7 @@ open class QViewModel(
 
    private var storedEnvironmentLoadState: LoadState<Environment> by mutableStateOf(LoadState.Loading(Unit))
 
-   private var defaultEnvironment = QAppContainer.availableEnvironments[0];
+   private var defaultEnvironment = QAppContainer.availableEnvironments[0]
 
    var environment: Environment by mutableStateOf(defaultEnvironment)
       private set
@@ -95,14 +97,13 @@ open class QViewModel(
    var qInstanceLoadState: LoadState<QInstance> by mutableStateOf(LoadState.Loading(Unit))
       private set
 
-   var qProcessMetaDataLoadState: Map<String, LoadState<QProcessMetaData>> by mutableStateOf(emptyMap())
-      private set
+   var topBarStatusText: String? by mutableStateOf("")
 
    init
    {
       viewModelScope.launch()
       {
-         doInitialLoadFromDataStoreV2().join()
+         doInitialLoadFromDataStore().join()
          loadAuthenticationMetaData().join()
          tryLoginFromDataStore().join()
       }
@@ -136,7 +137,6 @@ open class QViewModel(
       authenticationMetaDataLoadState = LoadState.Loading(Unit)
       manageSessionLoadState = LoadState.Loading(Unit)
       qInstanceLoadState = LoadState.Loading(Unit)
-      qProcessMetaDataLoadState = emptyMap()
    }
 
    /***************************************************************************
@@ -191,7 +191,7 @@ open class QViewModel(
     ***************************************************************************/
    fun logInFailed()
    {
-      isAuthenticated = false;
+      isAuthenticated = false
 
       ///////////////////////////////////////////////////
       // make sure we don't have a sessionUUID stored. //
@@ -204,7 +204,7 @@ open class QViewModel(
     ***************************************************************************/
    fun logInSuccessful()
    {
-      isAuthenticated = true;
+      isAuthenticated = true
       storeSessionUUID(sessionUUID)
    }
 
@@ -224,84 +224,11 @@ open class QViewModel(
       isLogoutRequested = false
    }
 
-   /***************************************************************************
-    **
-    ***************************************************************************/
-   private fun doInitialLoadFromDataStore()
-   {
-      viewModelScope.launch()
-      {
-         ////////////////////////////////////////
-         // load the session UUID from storage //
-         ////////////////////////////////////////
-         Log.d(TAG, "starting initialLoadFromDataStore; waiting for loadStoredSessionUUID()")
-
-         viewModelScope.launch()
-         {
-            loadStoredSessionUUID()
-            loadStoredSessionUserFullName()
-         }.join()
-
-         when (storedSessionUUIDLoadState)
-         {
-            is LoadState.Success<String> ->
-            {
-               Log.d(TAG, "loadStoredSessionUUID was success")
-               sessionUUID = (storedSessionUUIDLoadState as LoadState.Success<String>).value
-
-               if(sessionUUID == "")
-               {
-                  Log.d(TAG, "loadStoredSessionUUID was empty - no more dance")
-               }
-               else
-               {
-                  Log.d(TAG, "loadStoredSessionUUID was set - trying to load instance now")
-                  qqqRepository.setSessionUUID(sessionUUID);
-                  loadQInstance().join()
-
-                  when (qInstanceLoadState)
-                  {
-                     is LoadState.Success<QInstance> ->
-                     {
-                        loadStoredSessionUserFullName().join()
-
-                        sessionUserFullName = when (val it = storedSessionUserFullName)
-                        {
-                           is LoadState.Success<String> -> it.value
-                           else -> "Unknown"
-                        }
-
-                        Log.d(TAG, "qInstanceLoadState was success (${qInstanceLoadState}).  marking login success!")
-                        logInSuccessful()
-                     }
-
-                     else ->
-                     {
-                        qInstanceLoadState = LoadState.Loading(Unit)
-                        Log.d(TAG, "qInstanceLoadState was not success (${qInstanceLoadState}).  marking login failed.")
-                        logInFailed()
-                     }
-                  }
-               }
-            }
-
-            else ->
-            {
-               ///////////
-               // noop. //
-               ///////////
-               Log.d(TAG, "loadStoredSessionUUID was not success (${storedSessionUUIDLoadState}).  ending dance")
-            }
-         }
-
-         initialLoadFromDataStoreLoadState = LoadState.Success(Unit)
-      }
-   }
 
    /***************************************************************************
     **
     ***************************************************************************/
-   private fun doInitialLoadFromDataStoreV2(): Job
+   private fun doInitialLoadFromDataStore(): Job
    {
       return viewModelScope.launch()
       {
@@ -310,9 +237,9 @@ open class QViewModel(
          ////////////////////////////////////////
          Log.d(TAG, "starting initialLoadFromDataStore;")
 
-         val job1 = loadStoredSessionUUID();
-         val job2 = loadStoredSessionUserFullName();
-         val job3 = loadStoredEnvironmentOrDefault();
+         val job1 = loadStoredSessionUUID()
+         val job2 = loadStoredSessionUserFullName()
+         val job3 = loadStoredEnvironmentOrDefault()
 
          job1.join()
          job2.join()
@@ -344,7 +271,7 @@ open class QViewModel(
                else
                {
                   Log.d(TAG, "loadStoredSessionUUID was set - trying to load instance now")
-                  qqqRepository.setSessionUUID(sessionUUID);
+                  qqqRepository.setSessionUUID(sessionUUID)
                   loadQInstance().join()
 
                   when (qInstanceLoadState)
@@ -500,7 +427,7 @@ open class QViewModel(
     ***************************************************************************/
    fun doSetSessionUserFullName(value: String)
    {
-      sessionUserFullName = value;
+      sessionUserFullName = value
       viewModelScope.launch()
       {
          settingsRepository.setSessionUserFullName(value)
@@ -525,7 +452,7 @@ open class QViewModel(
             settingsRepository.setSessionUUID(sessionUUID)
          }.join()
 
-         clearAll();
+         clearAll()
 
          ////////////////////////////////////////
          // restore these 2 after the clear... //
@@ -544,7 +471,8 @@ open class QViewModel(
       {
          qInstanceLoadState = try
          {
-            val value = qqqRepository.getMetaData()
+            // todo - get frontend name & version from ... somewhere!
+            val value = qqqRepository.getMetaData("qqq-android", "1.0", applicationName, applicationVersion)
             LoadState.Success(value)
          }
          catch(e: Exception)
@@ -558,30 +486,10 @@ open class QViewModel(
    /***************************************************************************
     **
     ***************************************************************************/
-   fun loadQProcessMetaData(processName: String)
+   fun getURI(path: String): String
    {
-      if(qProcessMetaDataLoadState.containsKey(processName))
-      {
-         // todo - try again if failed, or if old??
-         return;
-      }
-
-      qProcessMetaDataLoadState = qProcessMetaDataLoadState.plus(Pair(processName, LoadState.Loading(Unit)))
-
-      viewModelScope.launch()
-      {
-         val processLoadState = try
-         {
-            LoadState.Success(qqqRepository.getProcessMetaData(processName))
-         }
-         catch(e: Exception)
-         {
-            Log.w(TAG, "Error loading Process [${processName}]", e)
-            LoadState.Error(e.message ?: "Error loading Process")
-         }
-
-         qProcessMetaDataLoadState = qProcessMetaDataLoadState.plus(Pair(processName, processLoadState))
-      }
+      val uri = qqqRepository.getURI(path)
+      return uri
    }
 
    /***************************************************************************
@@ -589,6 +497,9 @@ open class QViewModel(
     ***************************************************************************/
    companion object
    {
+      var applicationName: String = "anonymousApp"
+      var applicationVersion: String = "0"
+
       lateinit var dataStore: DataStore<Preferences>
 
       val factory: ViewModelProvider.Factory = viewModelFactory()

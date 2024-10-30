@@ -1,6 +1,6 @@
 /*
  * QQQ - Low-code Application Framework for Engineers.
- * Copyright (C) 2024-2024.  Kingsrook, LLC
+ * Copyright (C) 2004-2024.  Kingsrook, LLC
  * 651 N Broad St Ste 205 # 6917 | Middletown DE 19709 | United States
  * contact@kingsrook.com
  * https://github.com/Kingsrook/
@@ -17,6 +17,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 package com.kingsrook.qqq.frontend.android.core.model.metadata.authentication
@@ -41,16 +42,18 @@ class AuthenticationSerializerTest
         {
            "name":"auth0",
            "type":"AUTH_0",
-           "customizer":{"name":"com.coldtrack.live.utils.ColdTrackLiveAuth0Customizer","codeType":"JAVA"},
-           "baseUrl":"https://auth.coldtrack-dev.com/",
-           "clientId":"Q7hjPeDrfq11EgZyFxpoXQRTPhTn3KzN",
-           "audience":"https://www.nutrifresh-one-dev.com"
+           "values": 
+           {
+              "baseUrl":"https://auth.coldtrack-dev.com/",
+              "clientId":"Q7hjPeDrfq11EgZyFxpoXQRTPhTn3KzN",
+              "audience":"https://www.nutrifresh-one-dev.com"
+           }
         }
-        """;
+        """
 
       val withUnknownKeys = Json { ignoreUnknownKeys = true }
       val parsedItem = withUnknownKeys.decodeFromString<BaseAuthenticationMetaData>(json)
       assertTrue(parsedItem is Auth0AuthenticationMetaData)
-      assertEquals("Q7hjPeDrfq11EgZyFxpoXQRTPhTn3KzN", (parsedItem as Auth0AuthenticationMetaData).clientId);
+      assertEquals("Q7hjPeDrfq11EgZyFxpoXQRTPhTn3KzN", (parsedItem as Auth0AuthenticationMetaData).values.clientId)
    }
 }

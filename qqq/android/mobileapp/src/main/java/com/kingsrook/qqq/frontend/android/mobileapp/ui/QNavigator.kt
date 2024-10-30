@@ -1,3 +1,25 @@
+/*
+ * QQQ - Low-code Application Framework for Engineers.
+ * Copyright (C) 2004-2024.  Kingsrook, LLC
+ * 651 N Broad St Ste 205 # 6917 | Middletown DE 19709 | United States
+ * contact@kingsrook.com
+ * https://github.com/Kingsrook/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
 package com.kingsrook.qqq.frontend.android.mobileapp.ui
 
 import androidx.compose.runtime.getValue
@@ -8,13 +30,12 @@ import androidx.navigation.NavHostController
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.horseshoe.AppRoute
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.horseshoe.HomeRoute
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.horseshoe.ProcessRoute
-
-private const val TAG = "QNavigator";
+import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.QViewModel
 
 /***************************************************************************
  **
  ***************************************************************************/
-class QNavigator(val navController: NavHostController) : ViewModel()
+class QNavigator(val navController: NavHostController, val qViewModel: QViewModel) : ViewModel()
 {
    var navDepth: Int by mutableStateOf(0)
       private set
@@ -22,29 +43,49 @@ class QNavigator(val navController: NavHostController) : ViewModel()
    var atHome: Boolean by mutableStateOf(true)
       private set
 
-   /***************************************************************************
-    **
-    ***************************************************************************/
-   fun navigateToApp(name: String)
+   var titleStack: List<String?> by mutableStateOf(mutableListOf())
+      private set
+
+   init
    {
-      navigateToRoute(AppRoute(name))
+      navController.addOnDestinationChangedListener()
+      { controller, destination, _ ->
+
+         /////////////////////////////////////////////////////////////////
+         // clear out the top bar status text after upon any navigation //
+         /////////////////////////////////////////////////////////////////
+         qViewModel.topBarStatusText = null
+      }
    }
 
    /***************************************************************************
     **
     ***************************************************************************/
-   fun navigateToProcess(name: String)
+   fun navigateToApp(name: String, label: String)
    {
-      navigateToRoute(ProcessRoute(name))
+      navigateToRoute(AppRoute(name), label)
    }
 
    /***************************************************************************
     **
     ***************************************************************************/
-   private fun navigateToRoute(route: Any)
+   fun navigateToProcess(name: String, label: String)
+   {
+      navigateToRoute(ProcessRoute(name), label)
+   }
+
+   /***************************************************************************
+    **
+    ***************************************************************************/
+   private fun navigateToRoute(route: Any, label: String)
    {
       navDepth++
-      atHome = false;
+      atHome = false
+
+      val titleStackMutation = titleStack.toMutableList()
+      titleStackMutation.add(label)
+      titleStack = titleStackMutation
+
       navController.navigate(route)
    }
 
@@ -57,12 +98,16 @@ class QNavigator(val navController: NavHostController) : ViewModel()
       if(!navController.popBackStack())
       {
          navController.navigate(HomeRoute)
-         navDepth = 0;
+         navDepth = 0
       }
+
+      val titleStackMutation = titleStack.toMutableList()
+      titleStackMutation.removeAt(titleStackMutation.size - 1)
+      titleStack = titleStackMutation
 
       if(navDepth <= 0)
       {
-         atHome = true;
+         atHome = true
       }
    }
 

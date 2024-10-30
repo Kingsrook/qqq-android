@@ -1,6 +1,6 @@
 /*
  * QQQ - Low-code Application Framework for Engineers.
- * Copyright (C) 2024-2024.  Kingsrook, LLC
+ * Copyright (C) 2004-2024.  Kingsrook, LLC
  * 651 N Broad St Ste 205 # 6917 | Middletown DE 19709 | United States
  * contact@kingsrook.com
  * https://github.com/Kingsrook/
@@ -17,6 +17,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 package com.kingsrook.qqq.frontend.android.mobileapp.viewmodel
@@ -28,7 +29,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -41,67 +41,145 @@ import com.kingsrook.qqq.frontend.android.core.model.processes.QJobComplete
 import com.kingsrook.qqq.frontend.android.core.model.processes.QJobError
 import com.kingsrook.qqq.frontend.android.core.model.processes.QJobRunning
 import com.kingsrook.qqq.frontend.android.core.model.processes.QJobStarted
-import com.kingsrook.qqq.frontend.android.mobileapp.QMobileApplication
+import com.kingsrook.qqq.frontend.android.core.model.widgets.WidgetBlock
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 
-private const val TAG = "QViewModel"
+private const val TAG = "ProcessViewModel"
 
 /***************************************************************************
  **
  ***************************************************************************/
-open class ProcessViewModel(
-   private val qqqRepository: QQQRepository
-) : ViewModel()
+open class ProcessViewModel : ViewModel()
 {
+   lateinit var qqqRepository: QQQRepository
    lateinit var qInstance: QInstance
    lateinit var processName: String
+   lateinit var qViewModel: QViewModel
+
+   //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   // function that this view-model can call, if user chose, within the process, to leave the process.         //
+   // so process can do its cleanup work, and then let the navigation event occur to go to a different screen. //
+   // we are probably missing the reverse of this - where a navigation event (e.g., back arrow) isn't letting  //
+   // this view-model know that it is ending, so, that's a potential todo                                      //
+   //////////////////////////////////////////////////////////////////////////////////////////////////////////////
    var closeProcessCallback: (() -> Unit)? = null
 
+   ///////////////////////////////////////////////////////////////////////
+   // load-state wrapper for the fetching of the full process meta data //
+   ///////////////////////////////////////////////////////////////////////
    var processMetaDataLoadState: LoadState<QProcessMetaData> by mutableStateOf(LoadState.Loading(Unit))
       private set
 
+   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   // optional full meta-data for the process (yes, it is also in the load-state, but this is more straightforward //
+   // for code that can safely assume the process has been init'ed, and just needs the meta-data)                  //
+   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   var processMetaData: QProcessMetaData? = null
+      private set
+
+   ////////////////////////////////////////////////////////////////////////////////
+   // load-state for the process's "init" call - e.g., the first backend step(s) //
+   ////////////////////////////////////////////////////////////////////////////////
    var initLoadState: LoadState<ProcessStepResult> by mutableStateOf(LoadState.Loading(Unit))
       private set
 
+   /////////////////////////////////////////////////////////////////////////////////////////////
+   // a high-level "the process crashed" load-state                                           //
+   // will never be "Loading", and initializes as Success - so just upon-error becomes Error. //
+   /////////////////////////////////////////////////////////////////////////////////////////////
    var topLevelErrorState: LoadState<Unit> by mutableStateOf(LoadState.Success(Unit))
       private set
 
-   //////////////////////////////////
-   // state of the running process //
-   //////////////////////////////////
-   private var processUUID: String? = null
-
-   var waitingOnBackend: Boolean by mutableStateOf(true) // true when, we're waiting on the backend - so e.g., next buttons are disabled.
+   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   // UUID for the process - defined upon the first response from the init step (whether complete or job-started) //
+   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   var processUUID: String? = null
       private set
 
-   var activeJobUUID: String by mutableStateOf("")
+   ////////////////////////////////////////////////////////////////////////////////////
+   // true when, we're waiting on the backend - so e.g., form elements are disabled. //
+   ////////////////////////////////////////////////////////////////////////////////////
+   var waitingOnBackend: Boolean by mutableStateOf(true)
       private set
 
+   /////////////////////////////////////////////////////////////////////////////
+   // when waiting on a backend step that's gone async, this will be its UUID //
+   /////////////////////////////////////////////////////////////////////////////
+   private var activeJobUUID: String by mutableStateOf("")
+
+   ////////////////////////////////////////////////////////////////////
+   // message and counts from the backend when an async job is going //
+   ////////////////////////////////////////////////////////////////////
    var jobRunningMessage: String by mutableStateOf("")
-
    var currentOfTotalMessage: String by mutableStateOf("")
 
+   ////////////////////////////////////////////////
+   // timestamp of last check-in on an async job //
+   ////////////////////////////////////////////////
    var jobRunningLastUpdated: LocalDateTime by mutableStateOf(LocalDateTime.now())
       private set
 
+   //////////////////////////////////////////////////////////////////////////////
+   // result of the last backend call - be that complete/started/running/error //
+   //////////////////////////////////////////////////////////////////////////////
    var lastStepResult: ProcessStepResult by mutableStateOf(QJobComplete("", nextStep = ""))
       private set
 
-   var frontendSteps: List<QFrontendStepMetaData> = emptyList()
-      private set
+   /////////////////////////////////////////////////////////////////////////////////////////////
+   // list of the process's frontend steps (which may get mutated based on backend responses) //
+   /////////////////////////////////////////////////////////////////////////////////////////////
+   private var frontendSteps: List<QFrontendStepMetaData> = emptyList()
 
-   var activeStepName: String by mutableStateOf("")
-
-   var activeStepIndex: Int by mutableIntStateOf(0)
-      private set
-
+   ///////////////////////////////////////////
+   // which frontend step is actively shown //
+   ///////////////////////////////////////////
    var activeStep: QFrontendStepMetaData? by mutableStateOf(null)
       private set
 
+   /////////////////////////////////////////////////////////////////////////////////
+   // name of the active step (e.g., the frontend step that we are to be showing) //
+   // (only publicly settable for previews/tests...)                              //
+   /////////////////////////////////////////////////////////////////////////////////
+   var activeStepName: String by mutableStateOf("")
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   // index of the active step (useful for looking at "last" and/or "next to last") //
+   ///////////////////////////////////////////////////////////////////////////////////
+   private var activeStepIndex: Int by mutableIntStateOf(0)
+
+   ///////////////////////////////////////////////////////////////////////////////////////////
+   // counter that will increment when user moves to a next-step -- even if that step is    //
+   // the same name or index -- but serves as a signal to views that they need to recompose //
+   ///////////////////////////////////////////////////////////////////////////////////////////
+   var stepInstanceCounter: Int by mutableIntStateOf(0)
+      private set
+
+   /////////////////////////////////////////////////////////////////////////////////////////
+   // map of callback functions, that controls can register into, so that they can get a  //
+   // callback when something changes.  Originally built for modal-composite blocks, so   //
+   // they can be told when their visibility should change, e.g., in response to a button //
+   /////////////////////////////////////////////////////////////////////////////////////////
+   private var controlCallbacks: MutableMap<String, (() -> Unit)> = mutableMapOf()
+
+   ///////////////////////////////////////////////////////////////////////////////////////
+   // a callback that runs before a submit to the backend (e.g., for a next-step) fires //
+   ///////////////////////////////////////////////////////////////////////////////////////
+   var onSubmitCallback: (() -> Unit)? = null
+
+   ///////////////////////////////////////////////////////
+   // the map of values for fields within this process. //
+   ///////////////////////////////////////////////////////
    var processValues: MutableMap<String, Any?> = mutableMapOf()
+
+   ////////////////////////////////////////////////////////////////////////////////////////////////
+   // set of names of fields which are "form fields" - e.g., whose entry in processValues should //
+   // automatically be submitted when moving to next-step.  Views, if they show fields, should   //
+   // register those field's names in this map via call to: registerFormFieldName(name)          //
+   ////////////////////////////////////////////////////////////////////////////////////////////////
+   var formFieldNames: MutableSet<String> = mutableSetOf()
 
    /***************************************************************************
     **
@@ -120,12 +198,16 @@ open class ProcessViewModel(
     ***************************************************************************/
    private fun loadProcessMetaData(): Job
    {
+      val processViewModel = this
+
       return viewModelScope.launch()
       {
          processMetaDataLoadState = try
          {
             val processMetaData = qqqRepository.getProcessMetaData(processName)
             frontendSteps = processMetaData.frontendSteps ?: emptyList()
+
+            processViewModel.processMetaData = processMetaData
 
             LoadState.Success(processMetaData)
          }
@@ -144,38 +226,18 @@ open class ProcessViewModel(
    {
       return viewModelScope.launch()
       {
-         initLoadState = try
+         try
          {
             waitingOnBackend = true
+            initLoadState = LoadState.Loading(Unit)
+
             val value = qqqRepository.processInit(processName, emptyMap())
-            processUUID = value.processUUID
-            waitingOnBackend = false
-
-            when (value)
-            {
-               is QJobComplete ->
-               {
-                  processJobCompleteResult(value)
-               }
-
-               is QJobError ->
-               {
-                  setTopLevelError(value.userFacingError ?: value.error)
-               }
-
-               else ->
-               {
-                  setTopLevelError("Unexpected response state on a process init call (of type: ${value.javaClass.simpleName})")
-               }
-            }
-
-            lastStepResult = value
-            LoadState.Success(value)
+            evaluateProcessResult(value)
          }
          catch(e: Exception)
          {
             Log.w(TAG, "Error initing process", e)
-            LoadState.Error(e.message ?: "Error initing process")
+            initLoadState = LoadState.Error(e.message ?: "Error initing process")
          }
       }
    }
@@ -191,27 +253,35 @@ open class ProcessViewModel(
    /***************************************************************************
     **
     ***************************************************************************/
-   fun runStep()
+   fun runStep(eventValues: Map<String, Any?> = emptyMap())
    {
-      val localProcessUUID = processUUID;
-      val localActiveStepName = activeStepName;
+      val localProcessUUID = processUUID
+      val localActiveStepName = activeStepName
 
       if(localProcessUUID == null)
       {
          setTopLevelError("Missing process UUID.  Unable to continue running process.")
-         return;
+         return
       }
 
       if(localActiveStepName == "")
       {
          setTopLevelError("Missing current step name.  Unable to continue running process.")
-         return;
+         return
       }
 
-      // todo all the work with the form and form values
+      val valuesToSubmit: MutableMap<String, Any?> = mutableMapOf()
 
-      val formParams: MutableMap<String, Any?> = mutableMapOf()
-      formParams["_qStepTimeoutMillis"] = 1000
+      // todo all the work with the form and form values, like validation, and formatting?
+      for(name in formFieldNames)
+      {
+         valuesToSubmit[name] = processValues[name]
+      }
+
+      for(entry in eventValues.entries)
+      {
+         valuesToSubmit[entry.key] = entry.value
+      }
 
       /////////////////////////////////////////
       // set state to show we're loading now //
@@ -224,7 +294,9 @@ open class ProcessViewModel(
       {
          try
          {
-            val value = qqqRepository.processStep(processName, localProcessUUID, localActiveStepName, formParams)
+            onSubmitCallback?.invoke()
+
+            val value = qqqRepository.processStep(processName, localProcessUUID, localActiveStepName, valuesToSubmit, stepTimeoutMillis = 1000)
             evaluateProcessResult(value)
          }
          catch(e: Exception)
@@ -248,6 +320,16 @@ open class ProcessViewModel(
          {
             waitingOnBackend = false
             processJobCompleteResult(value)
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////
+            // if the initLoadState was loading, then it means we've finally completed the initial load - //
+            // so now we can set a few things to indicate we've progressed past that.                     //
+            ////////////////////////////////////////////////////////////////////////////////////////////////
+            if(initLoadState is LoadState.Loading)
+            {
+               processUUID = value.processUUID
+               initLoadState = LoadState.Success(value)
+            }
          }
 
          is QJobError ->
@@ -259,7 +341,9 @@ open class ProcessViewModel(
          is QJobStarted ->
          {
             waitingOnBackend = true
+            jobRunningLastUpdated = LocalDateTime.now()
             activeJobUUID = value.jobUUID
+            processUUID = value.processUUID
          }
 
          is QJobRunning ->
@@ -297,9 +381,18 @@ open class ProcessViewModel(
    private fun processJobCompleteResult(value: QJobComplete)
    {
       updateActiveStepName(value.nextStep)
+      stepInstanceCounter++
 
       processValues = value.values.toMutableMap()
       activeJobUUID = ""
+      formFieldNames = mutableSetOf()
+
+      ///////////////////////////////////////////////////////////////////////////
+      // at some point, we might want to support the ability for a process     //
+      // to make a value appear in the topBarStatusText area... but not today! //
+      // whenever we do that, it might not belong here anyway                  //
+      ///////////////////////////////////////////////////////////////////////////
+      // qViewModel.topBarStatusText = "${System.currentTimeMillis() % 100}"
 
       value.processMetaDataAdjustment?.let()
       { adjustment ->
@@ -332,26 +425,19 @@ open class ProcessViewModel(
     ***************************************************************************/
    fun checkIn()
    {
-      val localProcessUUID = processUUID;
-      val localActiveStepName = activeStepName;
-      val localJobUUID = activeJobUUID;
+      val localProcessUUID = processUUID
+      val localJobUUID = activeJobUUID
 
       if(localProcessUUID == null)
       {
          setTopLevelError("Missing process UUID.  Unable to continue running process.")
-         return;
-      }
-
-      if(localActiveStepName == "")
-      {
-         setTopLevelError("Missing current step name.  Unable to continue running process.")
-         return;
+         return
       }
 
       if(localJobUUID == null)
       {
          setTopLevelError("Missing job UUID.  Unable to continue running process.")
-         return;
+         return
       }
 
       viewModelScope.launch()
@@ -390,7 +476,7 @@ open class ProcessViewModel(
          {
             if(local.value.stepFlow == "LINEAR" && activeStepIndex == frontendSteps.size - 2)
             {
-               return ("Submit");
+               return ("Submit")
             }
          }
 
@@ -416,7 +502,7 @@ open class ProcessViewModel(
          {
             if(local.value.stepFlow == "LINEAR" && activeStepIndex == frontendSteps.size - 1)
             {
-               return (true);
+               return (true)
             }
          }
 
@@ -428,10 +514,117 @@ open class ProcessViewModel(
 
       if(processValues["noMoreSteps"] != null)
       {
-         return (true);
+         return (true)
       }
 
-      return (false);
+      return (false)
+   }
+
+   /***************************************************************************
+    **
+    ***************************************************************************/
+   fun registerFormFieldName(name: String)
+   {
+      formFieldNames.add(name)
+   }
+
+   /***************************************************************************
+    **
+    ***************************************************************************/
+   fun actionCallback(eventValues: Map<String, Any>)
+   {
+      val registerControlCallbackName = eventValues["registerControlCallbackName"]
+      val registerControlCallbackFunction = eventValues["registerControlCallbackFunction"]
+      if(registerControlCallbackName is String && registerControlCallbackFunction != null)
+      {
+         controlCallbacks[registerControlCallbackName] = eventValues["registerControlCallbackFunction"] as () -> Unit
+         return
+      }
+
+      var valuesForRunStep: Map<String, Any?> = eventValues
+      var doRunStep = true
+      var controlCode: String? = null
+      var controlCallbackName: String? = null
+
+      val widgetBlock = eventValues["widgetBlock"]
+      if(widgetBlock is WidgetBlock)
+      {
+         if(widgetBlock.blockType == "BUTTON" && widgetBlock.values["actionCode"] != null)
+         {
+            // todo maybe here if (eventValues && eventValues.actionCode && !ProcessWidgetBlockUtils.isActionCodeValid(eventValues.actionCode, activeStep, processValues))
+            valuesForRunStep = mapOf("actionCode" to widgetBlock.values["actionCode"])
+         }
+         else if(widgetBlock.blockType == "BUTTON" && widgetBlock.values["controlCode"] != null)
+         {
+            controlCode = widgetBlock.values["controlCode"].toString()
+         }
+      }
+
+      if(eventValues["controlCode"] != null)
+      {
+         controlCode = eventValues["controlCode"].toString()
+      }
+
+      if(controlCode != null)
+      {
+         doRunStep = false
+
+         val split = controlCode.split(Regex(":"), 2)
+         if(split.size == 2)
+         {
+            if(split[0] == "showModal")
+            {
+               processValues[split[1]] = true
+               controlCallbackName = split[1]
+            }
+            else if(split[0] == "hideModal")
+            {
+               processValues[split[1]] = false
+               controlCallbackName = split[1]
+            }
+            else if(split[0] == "toggleModal")
+            {
+               val currentValue = processValues[split[1]]
+               if(currentValue is Boolean)
+               {
+                  processValues[split[1]] = !currentValue
+               }
+               else
+               {
+                  processValues[split[1]] = true
+               }
+               controlCallbackName = split[1]
+            }
+            else
+            {
+               Log.w(TAG, "Unexpected part[0] (before colon) in controlCode: [${controlCode}]")
+            }
+         }
+         else
+         {
+            Log.w(TAG, "Expected controlCode to have 2 colon-delimited parts, but was: [${controlCode}]")
+         }
+      }
+
+      if(controlCallbackName != null)
+      {
+         if(controlCallbacks[controlCallbackName] != null)
+         {
+            try
+            {
+               controlCallbacks[controlCallbackName]?.invoke()
+            }
+            catch(e: Exception)
+            {
+               Log.w(TAG, "Error calling control callback for [${controlCallbackName}]", e)
+            }
+         }
+      }
+
+      if(doRunStep)
+      {
+         runStep(valuesForRunStep)
+      }
    }
 
    /***************************************************************************
@@ -443,8 +636,7 @@ open class ProcessViewModel(
       {
          initializer()
          {
-            val application = (this[APPLICATION_KEY] as QMobileApplication)
-            ProcessViewModel(qqqRepository = application.container.qqqRepository)
+            ProcessViewModel()
          }
       }
    }

@@ -1,6 +1,6 @@
 /*
  * QQQ - Low-code Application Framework for Engineers.
- * Copyright (C) 2024-2024.  Kingsrook, LLC
+ * Copyright (C) 2004-2024.  Kingsrook, LLC
  * 651 N Broad St Ste 205 # 6917 | Middletown DE 19709 | United States
  * contact@kingsrook.com
  * https://github.com/Kingsrook/
@@ -17,10 +17,15 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 package com.kingsrook.qqq.frontend.android.mobileapp.ui.horseshoe
 
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
@@ -38,9 +43,12 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.core.content.ContextCompat.getSystemService
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.QNavigator
 import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.QViewModel
 
@@ -49,10 +57,36 @@ import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.QViewModel
  ***************************************************************************/
 @OptIn(ExperimentalMaterial3Api::class) // needed for TopAppBar
 @Composable
-fun QTopAppBar(qViewModel: QViewModel, title: String = "A QQQ Android Application", navMenuCallback: (() -> Unit)? = null, qNavigator: QNavigator? = null)
+fun QTopAppBar(qViewModel: QViewModel, defaultTitle: String = "A QQQ Android Application", navMenuCallback: (() -> Unit)? = null, qNavigator: QNavigator? = null)
 {
    val isUserDialogOpen = remember { mutableStateOf(false) }
    val isEnvironmentDialogOpen = remember { mutableStateOf(false) }
+
+   val title = if(qNavigator?.titleStack?.isEmpty() == false) qNavigator.titleStack.get(qNavigator.titleStack.size - 1) ?: defaultTitle else defaultTitle
+
+   val networkRequest = NetworkRequest.Builder()
+      .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+      .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+      .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+      .build()
+
+   val networkAvailable = remember { mutableStateOf(true) }
+
+   val networkCallback = object : ConnectivityManager.NetworkCallback()
+   {
+      override fun onAvailable(network: Network)
+      {
+         networkAvailable.value = true
+      }
+
+      override fun onLost(network: Network)
+      {
+         networkAvailable.value = false
+      }
+   }
+
+   val connectivityManager = getSystemService(LocalContext.current, ConnectivityManager::class.java) as ConnectivityManager
+   connectivityManager.requestNetwork(networkRequest, networkCallback)
 
    TopAppBar(
       colors = TopAppBarDefaults.topAppBarColors(
@@ -77,7 +111,10 @@ fun QTopAppBar(qViewModel: QViewModel, title: String = "A QQQ Android Applicatio
          {
             qNavigator?.let()
             {
-               IconButton(onClick = { qNavigator.popStack() }, enabled = !qNavigator.atHome)
+               IconButton(onClick = { qNavigator.popStack() },
+                  enabled = !qNavigator.atHome,
+                  modifier = Modifier.focusProperties { canFocus = false }
+               )
                {
                   if(qNavigator.atHome)
                   {
@@ -93,17 +130,31 @@ fun QTopAppBar(qViewModel: QViewModel, title: String = "A QQQ Android Applicatio
       },
       actions =
       {
-         IconButton(onClick = { isUserDialogOpen.value = true }, Modifier.testTag("topBar.userIcon"))
+         qViewModel.topBarStatusText?.let()
+         {
+            Text(it)
+         }
+
+         IconButton(onClick = { isUserDialogOpen.value = true }, modifier = Modifier
+            .focusProperties { canFocus = false }
+            .testTag("topBar.userIcon"))
          {
             Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "User Information")
          }
 
-         IconButton(onClick = { isEnvironmentDialogOpen.value = true }, Modifier.testTag("topBar.environmentIcon"))
+         IconButton(onClick = { isEnvironmentDialogOpen.value = true }, modifier = Modifier
+            .focusProperties { canFocus = false }
+            .testTag("topBar.environmentIcon"))
          {
             Icon(imageVector = Icons.Default.Place, contentDescription = "App Environment")
          }
       }
    )
+
+   if(!networkAvailable.value)
+   {
+      NoNetworkDialog(qViewModel)
+   }
 
    if(isUserDialogOpen.value)
    {

@@ -1,6 +1,6 @@
 /*
  * QQQ - Low-code Application Framework for Engineers.
- * Copyright (C) 2024-2024.  Kingsrook, LLC
+ * Copyright (C) 2004-2024.  Kingsrook, LLC
  * 651 N Broad St Ste 205 # 6917 | Middletown DE 19709 | United States
  * contact@kingsrook.com
  * https://github.com/Kingsrook/
@@ -17,6 +17,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 package com.kingsrook.qqq.frontend.android.core.model.metadata.authentication
@@ -29,16 +30,21 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Auth0AuthenticationMetaData(
    override val name: String,
-   val baseUrl: String,
-   val clientId: String,
-   val audience: String,
+   val values: Auth0AuthenticationMetaDataValues
 ) : BaseAuthenticationMetaData
 {
    override val type: String
-      get() = TYPE;
+      get() = TYPE
 
    companion object
    {
       const val TYPE = "AUTH_0"
    }
 }
+
+@Serializable
+data class Auth0AuthenticationMetaDataValues(
+   val baseUrl: String,
+   val clientId: String,
+   val audience: String,
+)

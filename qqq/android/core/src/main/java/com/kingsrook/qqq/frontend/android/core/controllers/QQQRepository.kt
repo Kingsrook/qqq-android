@@ -1,6 +1,6 @@
 /*
  * QQQ - Low-code Application Framework for Engineers.
- * Copyright (C) 2024-2024.  Kingsrook, LLC
+ * Copyright (C) 2004-2024.  Kingsrook, LLC
  * 651 N Broad St Ste 205 # 6917 | Middletown DE 19709 | United States
  * contact@kingsrook.com
  * https://github.com/Kingsrook/
@@ -17,6 +17,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 package com.kingsrook.qqq.frontend.android.core.controllers
@@ -42,15 +43,18 @@ interface QQQRepository
 
    suspend fun manageSession(body: ManageSessionRequest): ManageSessionResponse
 
-   suspend fun getMetaData(): QInstance
+   suspend fun getMetaData(frontendName: String, frontendVersion: String, applicationName: String, applicationVersion: String): QInstance
 
    suspend fun getProcessMetaData(processName: String): QProcessMetaData
 
-   suspend fun processInit(processName: String, formData: Map<String, Any?>): ProcessStepResult
+   suspend fun processInit(processName: String, values: Map<String, Any?>, recordsParam: String? = null, recordIds: String? = null, filterJSON: String? = null, stepTimeoutMillis: Int? = 3000): ProcessStepResult
 
-   suspend fun processStep(processName: String, processUUID: String, stepName: String, formData: Map<String, Any?>): ProcessStepResult
+   suspend fun processStep(processName: String, processUUID: String, stepName: String, values: Map<String, Any?>, stepTimeoutMillis: Int?): ProcessStepResult
 
    suspend fun processJobStatus(processName: String, processUUID: String, jobUUID: String): ProcessStepResult
 
+   suspend fun resource(path: String): ByteArray?
+
+   fun getURI(path: String): String
 }
 

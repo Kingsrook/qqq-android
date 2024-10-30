@@ -60,6 +60,7 @@ dependencies {
    implementation(libs.androidx.ui.tooling.preview.android)
    implementation(libs.androidx.navigation.compose)
    testImplementation(libs.junit)
+   testImplementation(libs.junit.junit)
    androidTestImplementation(libs.androidx.junit)
    androidTestImplementation(libs.androidx.espresso.core)
 
@@ -68,6 +69,10 @@ dependencies {
 
    implementation(libs.androidx.datastore.preferences)
    implementation(libs.androidx.datastore)
+
+   implementation(libs.coil.network.okhttp) // Only available on Android/JVM.
+   implementation(libs.coil.compose)
+   implementation(libs.coil.svg)
 
    implementation(project(":qqq:android:core"))
    implementation(libs.auth0)

@@ -1,6 +1,6 @@
 /*
  * QQQ - Low-code Application Framework for Engineers.
- * Copyright (C) 2024-2024.  Kingsrook, LLC
+ * Copyright (C) 2004-2024.  Kingsrook, LLC
  * 651 N Broad St Ste 205 # 6917 | Middletown DE 19709 | United States
  * contact@kingsrook.com
  * https://github.com/Kingsrook/
@@ -17,21 +17,28 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 package com.kingsrook.qqq.sampleandroidmobileapp.utils
 
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.printToLog
+import com.kingsrook.qqq.frontend.android.core.model.metadata.QAppNodeType
+import com.kingsrook.qqq.frontend.android.mobileapp.QMobileAppMain
 import com.kingsrook.qqq.sampleandroidmobileapp.SampleAppMockQQQRepository
 import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.QViewModel
 import com.kingsrook.qqq.frontend.android.mobileapp.data.MockPreferencesDataStore
-import com.kingsrook.qqq.sampleandroidmobileapp.MainComposable
 
 /***************************************************************************
  **
@@ -44,21 +51,29 @@ object TestUtils
    /***************************************************************************
     **
     ***************************************************************************/
+   fun startStandardTest2(composeTestRule: ComposeContentTestRule, qViewModelParam: QViewModel? = null)
+   {
+
+   }
+
+   /***************************************************************************
+    **
+    ***************************************************************************/
    fun startStandardTest(composeTestRule: ComposeContentTestRule, qViewModelParam: QViewModel? = null)
    {
       if(qViewModelParam == null)
       {
-         this.qViewModel = createQViewModel();
+         this.qViewModel = createQViewModel()
       }
       else
       {
-         this.qViewModel = qViewModelParam;
+         this.qViewModel = qViewModelParam
       }
 
       composeTestRule.setContent()
       {
          toast = Toast.makeText(LocalContext.current, "This is a test", 3)
-         MainComposable(this.qViewModel)
+         QMobileAppMain(this.qViewModel, "Test App")
       }
    }
 
@@ -112,23 +127,23 @@ object TestUtils
    {
       if(seconds == 0)
       {
-         return;
+         return
       }
 
       if(System.getenv("CIRCLECI") != null)
       {
-         println("In CIRCLECI - so - not doing a localDebugSleep");
-         return;
+         println("In CIRCLECI - so - not doing a localDebugSleep")
+         return
       }
 
       showToast("Going into a localDebugSleep sleep \uD83D\uDECC now for ${seconds} second${if(seconds == 1) "" else "s"} ⏰")
-      sleep(composeTestRule, seconds);
+      sleep(composeTestRule, seconds)
    }
 
    /***************************************************************************
     **
     ***************************************************************************/
-   fun logTree(composeTestRule: ComposeContentTestRule, useUnmergedTree: Boolean)
+   fun logTree(composeTestRule: ComposeContentTestRule, useUnmergedTree: Boolean = false)
    {
       composeTestRule.onRoot(useUnmergedTree = useUnmergedTree)
          .printToLog("currentLabelExists")
@@ -143,3 +158,23 @@ object TestUtils
       toast.show()
    }
 }
+
+/***************************************************************************
+ **
+ ***************************************************************************/
+fun ComposeContentTestRule.clickAppScreenOption(type: QAppNodeType, childName: String)
+{
+   val testTag = "appHome.rowFor" + when(type)
+   {
+      QAppNodeType.APP -> "App:"
+      QAppNodeType.TABLE -> "Table:"
+      QAppNodeType.PROCESS -> "Process:"
+      QAppNodeType.REPORT -> "Report:"
+   } + childName
+
+   this.onNode(hasAnyAncestor(hasTestTag(testTag)) and hasText("Go"))
+      .assertIsDisplayed()
+      .assertIsEnabled()
+      .performClick()
+}
+

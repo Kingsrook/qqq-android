@@ -1,6 +1,6 @@
 /*
  * QQQ - Low-code Application Framework for Engineers.
- * Copyright (C) 2024-2024.  Kingsrook, LLC
+ * Copyright (C) 2004-2024.  Kingsrook, LLC
  * 651 N Broad St Ste 205 # 6917 | Middletown DE 19709 | United States
  * contact@kingsrook.com
  * https://github.com/Kingsrook/
@@ -17,6 +17,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 package com.kingsrook.qqq.frontend.android.mobileapp.ui.horseshoe
@@ -49,8 +50,8 @@ import kotlinx.serialization.Serializable
 @Composable
 fun QApplicationWrapper(qViewModel: QViewModel, modifier: Modifier = Modifier, qNavigator: QNavigator? = null)
 {
-   val qInstanceLoadState = qViewModel.qInstanceLoadState;
-   val loadStates = listOf(qInstanceLoadState);
+   val qInstanceLoadState = qViewModel.qInstanceLoadState
+   val loadStates = listOf(qInstanceLoadState)
 
    val navController = qNavigator?.navController ?: rememberNavController()
 
@@ -90,7 +91,7 @@ fun QApplicationWrapper(qViewModel: QViewModel, modifier: Modifier = Modifier, q
                val process = qInstance.processes?.get(processRoute.name)
                if(process != null)
                {
-                  QProcessHome(qInstance, modifier, lightProcess = process, qNavigator = qNavigator)
+                  QProcessHome(qViewModel, qInstance, modifier, lightProcess = process, qNavigator = qNavigator)
                }
                else
                {
@@ -103,6 +104,9 @@ fun QApplicationWrapper(qViewModel: QViewModel, modifier: Modifier = Modifier, q
    }
 }
 
+/***************************************************************************
+ **
+ ***************************************************************************/
 @Composable
 private fun NotFound(qNavigator: QNavigator?, message: String)
 {

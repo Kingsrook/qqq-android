@@ -1,6 +1,6 @@
 /*
  * QQQ - Low-code Application Framework for Engineers.
- * Copyright (C) 2024-2024.  Kingsrook, LLC
+ * Copyright (C) 2004-2024.  Kingsrook, LLC
  * 651 N Broad St Ste 205 # 6917 | Middletown DE 19709 | United States
  * contact@kingsrook.com
  * https://github.com/Kingsrook/
@@ -17,6 +17,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 package com.kingsrook.qqq.sampleandroidmobileapp
@@ -57,14 +58,6 @@ class SessionTests : BaseTest()
    private val knownUUID = "some-known-uuid"
    private val fullName = "John Doe Test"
    private val envLabel = "Some Stored Env"
-
-   /***************************************************************************
-    **
-    ***************************************************************************/
-   private fun atEndLocalDebugSleep()
-   {
-      TestUtils.localDebugSleep(composeTestRule, 0)
-   }
 
    /***************************************************************************
     **
@@ -173,8 +166,8 @@ class SessionTests : BaseTest()
       composeTestRule
          .onNode(hasAnyAncestor(isDialog()) and hasText("Log Out"))
          .assertIsDisplayed()
-         .assertIsNotEnabled()
          .performClick()
+         .assertIsNotEnabled()
 
       composeTestRule
          .onNode(hasAnyAncestor(isDialog()) and hasText("Dismiss"))
@@ -299,13 +292,21 @@ class SessionTests : BaseTest()
    private fun assertHomePageIsDisplayed(pageTitle: String = "Home", anAppLabelOnPage: String = "App 1")
    {
       composeTestRule
-         .onNodeWithTag("qInstance.appLabel")
+         .onNodeWithTag("appHome.appLabel")
          .assertTextContains(pageTitle)
          .assertIsDisplayed()
 
       composeTestRule
          .onNodeWithText(anAppLabelOnPage)
          .assertIsDisplayed()
+   }
+
+   /***************************************************************************
+    **
+    ***************************************************************************/
+   private fun atEndLocalDebugSleep()
+   {
+      TestUtils.localDebugSleep(composeTestRule, 0)
    }
 
 }
