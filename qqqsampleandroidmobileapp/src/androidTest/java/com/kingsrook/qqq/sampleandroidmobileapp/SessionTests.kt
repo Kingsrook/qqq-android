@@ -289,10 +289,10 @@ class SessionTests : BaseTest()
    /***************************************************************************
     **
     ***************************************************************************/
-   private fun assertHomePageIsDisplayed(pageTitle: String = "Home", anAppLabelOnPage: String = "App 1")
+   private fun assertHomePageIsDisplayed(pageTitle: String = "Test App", anAppLabelOnPage: String = "App 1")
    {
       composeTestRule
-         .onNodeWithTag("appHome.appLabel")
+         .onNodeWithTag("topAppBar.title")
          .assertTextContains(pageTitle)
          .assertIsDisplayed()
 

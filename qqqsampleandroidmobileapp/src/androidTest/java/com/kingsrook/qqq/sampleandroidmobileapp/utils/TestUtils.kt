@@ -24,11 +24,10 @@ package com.kingsrook.qqq.sampleandroidmobileapp.utils
 
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
-import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -47,14 +46,6 @@ object TestUtils
 {
    lateinit var qViewModel: QViewModel
    lateinit var toast: Toast
-
-   /***************************************************************************
-    **
-    ***************************************************************************/
-   fun startStandardTest2(composeTestRule: ComposeContentTestRule, qViewModelParam: QViewModel? = null)
-   {
-
-   }
 
    /***************************************************************************
     **
@@ -162,6 +153,7 @@ object TestUtils
 /***************************************************************************
  **
  ***************************************************************************/
+@OptIn(ExperimentalTestApi::class) // for waitUntilAtLeastOneExists
 fun ComposeContentTestRule.clickAppScreenOption(type: QAppNodeType, childName: String)
 {
    val testTag = "appHome.rowFor" + when(type)
@@ -172,7 +164,9 @@ fun ComposeContentTestRule.clickAppScreenOption(type: QAppNodeType, childName: S
       QAppNodeType.REPORT -> "Report:"
    } + childName
 
-   this.onNode(hasAnyAncestor(hasTestTag(testTag)) and hasText("Go"))
+   this.waitUntilAtLeastOneExists(hasTestTag(testTag))
+
+   this.onNode(hasTestTag(testTag))
       .assertIsDisplayed()
       .assertIsEnabled()
       .performClick()

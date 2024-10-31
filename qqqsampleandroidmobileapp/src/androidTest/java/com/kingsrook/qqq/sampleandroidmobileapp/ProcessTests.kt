@@ -61,7 +61,7 @@ class ProcessTests : BaseTest()
       composeTestRule.clickAppScreenOption(QAppNodeType.APP, "app1")
 
       composeTestRule
-         .onNodeWithTag("appHome.appLabel")
+         .onNodeWithTag("topAppBar.title")
          .assertTextContains("App 1")
          .assertIsDisplayed()
          .performClick()
@@ -69,7 +69,7 @@ class ProcessTests : BaseTest()
       composeTestRule.clickAppScreenOption(QAppNodeType.PROCESS, "process1")
 
       composeTestRule
-         .onNodeWithTag("processHome.processLabel")
+         .onNodeWithTag("topAppBar.title")
          .assertTextContains("Process 1")
          .assertIsDisplayed()
          .performClick()

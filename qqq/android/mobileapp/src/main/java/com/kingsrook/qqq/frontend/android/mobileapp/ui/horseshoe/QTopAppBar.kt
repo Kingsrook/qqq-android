@@ -93,7 +93,7 @@ fun QTopAppBar(qViewModel: QViewModel, defaultTitle: String = "A QQQ Android App
          containerColor = MaterialTheme.colorScheme.primaryContainer,
          titleContentColor = MaterialTheme.colorScheme.primary,
       ),
-      title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+      title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.testTag("topAppBar.title")) },
       navigationIcon =
       {
          /////////////////////////////////////////////////////////

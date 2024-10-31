@@ -212,6 +212,7 @@ private fun Tile(label: String, icon: QIcon?, generalSize: Int, testTag: String,
       modifier = Modifier
          .padding(8.dp)
          .width(generalSize.dp)
+         .testTag(testTag)
          .clickable { onClick() }
    )
    {
