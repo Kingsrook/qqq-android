@@ -44,7 +44,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kingsrook.qqq.frontend.android.core.model.metadata.QComponentType
 import com.kingsrook.qqq.frontend.android.core.model.metadata.QInstance
 import com.kingsrook.qqq.frontend.android.core.model.metadata.QProcessMetaData
@@ -60,6 +59,7 @@ import com.kingsrook.qqq.frontend.android.mobileapp.ui.processes.components.Proc
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.processes.components.ProcessComponentProcessSummaryResults
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.processes.components.ProcessComponentWidget
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.processes.components.UnsupportedProcessComponent
+import com.kingsrook.qqq.frontend.android.mobileapp.ui.utils.Colors
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.utils.LoadStateView
 import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.LoadState
 import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.ProcessViewModel
@@ -70,18 +70,14 @@ import kotlinx.coroutines.delay
  **
  ***************************************************************************/
 @Composable
-fun QProcessHome(qViewModel: QViewModel, qInstance: QInstance, modifier: Modifier = Modifier, lightProcess: QProcessMetaData, qNavigator: QNavigator? = null)
+fun QProcessHome(qViewModel: QViewModel, qInstance: QInstance, modifier: Modifier = Modifier)
 {
-   val processViewModel: ProcessViewModel = viewModel(factory = ProcessViewModel.factory)
-   processViewModel.qqqRepository = qViewModel.qqqRepository
-   processViewModel.qInstance = qInstance
-   processViewModel.processName = lightProcess.name
-   processViewModel.qViewModel = qViewModel
-
-   processViewModel.closeProcessCallback =
-      {
-         qNavigator?.popStack()
-      }
+   val processViewModel = qViewModel.activeProcessViewModel
+   if(processViewModel == null)
+   {
+      Text("Error: ProcessViewModel was not available.", color = Colors.ERROR)
+      return
+   }
 
    val processMetaDataLoadState = processViewModel.processMetaDataLoadState
    val initLoadState = processViewModel.initLoadState
@@ -108,14 +104,6 @@ fun QProcessHome(qViewModel: QViewModel, qInstance: QInstance, modifier: Modifie
    //////////////////////////////////////////////////////////////
    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
    DisposableEffect(lifecycleOwner, disposeMediaPlayer(mediaPlayer, lifecycleOwner))
-
-   /////////////////////////////////
-   // do the initial process init //
-   /////////////////////////////////
-   LaunchedEffect(key1 = lightProcess.name)
-   {
-      processViewModel.doInit()
-   }
 
    ///////////////////////////////////////////////////////////////////////////////////////////
    // in case the init job has gone async - this LaunchedEffect will make us check in on it //

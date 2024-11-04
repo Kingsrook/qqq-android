@@ -27,15 +27,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
+import com.kingsrook.qqq.frontend.android.core.model.metadata.QInstance
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.horseshoe.AppRoute
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.horseshoe.HomeRoute
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.horseshoe.ProcessRoute
+import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.LoadState
+import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.ProcessViewModel
 import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.QViewModel
 
 /***************************************************************************
  **
  ***************************************************************************/
-class QNavigator(val navController: NavHostController, val qViewModel: QViewModel) : ViewModel()
+class QNavigator(var navController: NavHostController, val qViewModel: QViewModel) : ViewModel()
 {
    var navDepth: Int by mutableStateOf(0)
       private set
@@ -67,10 +70,27 @@ class QNavigator(val navController: NavHostController, val qViewModel: QViewMode
    }
 
    /***************************************************************************
-    **
+    ** As part of preserving the process view-model in case of activity restarts
+    ** (e.g., when screen orientation changes) - manage the lifecycle of the
+    ** active process view model in here - activating a new one when navigating.
     ***************************************************************************/
-   fun navigateToProcess(name: String, label: String)
+   fun navigateToProcess(name: String, label: String, processViewModel: ProcessViewModel)
    {
+      processViewModel.reset()
+      processViewModel.qqqRepository = qViewModel.qqqRepository
+      processViewModel.qInstance = (qViewModel.qInstanceLoadState as LoadState.Success<QInstance>).value
+      processViewModel.processName = name
+      processViewModel.qViewModel = qViewModel
+
+      processViewModel.closeProcessCallback =
+         {
+            this.popStack()
+         }
+
+      processViewModel.doInit()
+
+      qViewModel.activeProcessViewModel = processViewModel
+
       navigateToRoute(ProcessRoute(name), label)
    }
 

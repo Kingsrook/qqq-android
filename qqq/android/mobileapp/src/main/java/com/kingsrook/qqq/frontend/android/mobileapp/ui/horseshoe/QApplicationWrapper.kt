@@ -91,7 +91,7 @@ fun QApplicationWrapper(qViewModel: QViewModel, modifier: Modifier = Modifier, q
                val process = qInstance.processes?.get(processRoute.name)
                if(process != null)
                {
-                  QProcessHome(qViewModel, qInstance, modifier, lightProcess = process, qNavigator = qNavigator)
+                  QProcessHome(qViewModel, qInstance, modifier)
                }
                else
                {

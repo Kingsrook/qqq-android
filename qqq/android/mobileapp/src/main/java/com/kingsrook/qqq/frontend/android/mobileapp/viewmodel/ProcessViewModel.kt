@@ -181,6 +181,11 @@ open class ProcessViewModel : ViewModel()
    ////////////////////////////////////////////////////////////////////////////////////////////////
    var formFieldNames: MutableSet<String> = mutableSetOf()
 
+   ////////////////////////////////////////////////////////////////////////////
+   // Note:  if you add new fields - please, add them to `fun reset()` below //
+   ////////////////////////////////////////////////////////////////////////////
+
+
    /***************************************************************************
     **
     ***************************************************************************/
@@ -191,6 +196,33 @@ open class ProcessViewModel : ViewModel()
          loadProcessMetaData().join()
          initProcess()
       }
+   }
+
+   /***************************************************************************
+    **
+    ***************************************************************************/
+   fun reset()
+   {
+      processMetaDataLoadState = LoadState.Loading(Unit)
+      processMetaData = null
+      initLoadState = LoadState.Loading(Unit)
+      topLevelErrorState = LoadState.Success(Unit)
+      processUUID = null
+      waitingOnBackend = true
+      activeJobUUID = ""
+      jobRunningMessage = ""
+      currentOfTotalMessage = ""
+      jobRunningLastUpdated = LocalDateTime.now()
+      lastStepResult = QJobComplete("", nextStep = "")
+      frontendSteps = emptyList()
+      activeStep = null
+      activeStepName = ""
+      activeStepIndex = 0
+      stepInstanceCounter = 0
+      controlCallbacks = mutableMapOf()
+      onSubmitCallback = null
+      processValues = mutableMapOf()
+      formFieldNames = mutableSetOf()
    }
 
    /***************************************************************************

@@ -33,6 +33,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import com.kingsrook.qqq.frontend.android.core.model.Environment
 import com.kingsrook.qqq.frontend.android.mobileapp.QMobileAppMain
 import com.kingsrook.qqq.frontend.android.mobileapp.container.QAppContainer
@@ -80,6 +81,9 @@ class SampleAppMainActivity : ComponentActivity()
       {
          QViewModel.dataStore = LocalContext.current.dataStore
          val qViewModel: QViewModel = viewModel(factory = QViewModel.factory)
+
+         val navController = rememberNavController()
+         qViewModel.setNavController(navController)
 
          AppTheme()
          {

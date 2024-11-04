@@ -46,8 +46,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.rememberNavController
-import com.kingsrook.qqq.frontend.android.mobileapp.ui.QNavigator
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.authentication.QAuthenticationWrapper
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.horseshoe.QTopAppBar
 import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.QViewModel
@@ -118,9 +116,6 @@ fun QMobileAppMain(qViewModel: QViewModel, title: String, splashImage: Painter? 
       }
    }
 
-   val navController = rememberNavController()
-   val qNavigator = QNavigator(navController, qViewModel)
-
    val topLevelAppState = TopLevelAppState(coroutineScope = rememberCoroutineScope(), qViewModel = qViewModel)
 
    AnimatedVisibility(
@@ -136,7 +131,7 @@ fun QMobileAppMain(qViewModel: QViewModel, title: String, splashImage: Painter? 
                qViewModel,
                navMenuCallback = topLevelAppState::openNavDrawer,
                defaultTitle = title,
-               qNavigator = qNavigator
+               qNavigator = qViewModel.qNavigator
             )
          }
       ) { innerPadding ->
@@ -150,7 +145,7 @@ fun QMobileAppMain(qViewModel: QViewModel, title: String, splashImage: Painter? 
                qViewModel,
                Modifier
                   .fillMaxSize(),
-               qNavigator = qNavigator,
+               qNavigator = qViewModel.qNavigator,
             )
          }
       }

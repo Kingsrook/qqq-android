@@ -34,6 +34,7 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.NavHostController
 import com.kingsrook.qqq.frontend.android.core.controllers.QQQRepository
 import com.kingsrook.qqq.frontend.android.core.model.Environment
 import com.kingsrook.qqq.frontend.android.core.model.metadata.QInstance
@@ -44,6 +45,7 @@ import com.kingsrook.qqq.frontend.android.core.utils.firstN
 import com.kingsrook.qqq.frontend.android.mobileapp.QMobileApplication
 import com.kingsrook.qqq.frontend.android.mobileapp.container.QAppContainer
 import com.kingsrook.qqq.frontend.android.mobileapp.data.SettingsRepository
+import com.kingsrook.qqq.frontend.android.mobileapp.ui.QNavigator
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -99,6 +101,11 @@ open class QViewModel(
 
    var topBarStatusText: String? by mutableStateOf("")
 
+   lateinit var qNavigator: QNavigator
+   private var initedQNavigator = false
+
+   var activeProcessViewModel: ProcessViewModel? = null
+
    init
    {
       viewModelScope.launch()
@@ -106,6 +113,23 @@ open class QViewModel(
          doInitialLoadFromDataStore().join()
          loadAuthenticationMetaData().join()
          tryLoginFromDataStore().join()
+      }
+   }
+
+   /***************************************************************************
+    ** as part of not re-creating all the things upon orientation change -
+    ** own the qNavigator & navController here
+    ***************************************************************************/
+   fun setNavController(navController: NavHostController)
+   {
+      if(!initedQNavigator)
+      {
+         qNavigator = QNavigator(navController, this)
+         initedQNavigator = true
+      }
+      else
+      {
+         qNavigator.navController = navController
       }
    }
 
@@ -223,7 +247,6 @@ open class QViewModel(
    {
       isLogoutRequested = false
    }
-
 
    /***************************************************************************
     **

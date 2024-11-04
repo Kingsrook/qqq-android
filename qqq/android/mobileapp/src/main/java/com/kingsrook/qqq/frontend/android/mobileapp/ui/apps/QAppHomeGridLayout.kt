@@ -56,6 +56,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kingsrook.qqq.frontend.android.core.model.metadata.QAppMetaData
 import com.kingsrook.qqq.frontend.android.core.model.metadata.QAppNodeType
 import com.kingsrook.qqq.frontend.android.core.model.metadata.QIcon
@@ -63,6 +64,7 @@ import com.kingsrook.qqq.frontend.android.core.model.metadata.QInstance
 import com.kingsrook.qqq.frontend.android.mobileapp.R
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.QNavigator
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.utils.DynamicIcon
+import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.ProcessViewModel
 
 /***************************************************************************
  ** Standard screen for an app - shows icons in a grid.
@@ -183,9 +185,10 @@ fun QAppHomeGridLayout(qInstance: QInstance, modifier: Modifier = Modifier, app:
                      val process = qInstance.processes?.get(processName)
                      process?.let()
                      {
+                        val processViewModel: ProcessViewModel = viewModel(factory = ProcessViewModel.factory)
                         Tile(process.label, process.icon, generalSize, "appHome.rowForProcess:" + processName)
                         {
-                           qNavigator?.navigateToProcess(process.name, process.label)
+                           qNavigator?.navigateToProcess(process.name, process.label, processViewModel)
                         }
                      }
                   }
