@@ -26,6 +26,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.horseshoe.MenuDialog
+import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.QViewModel
 import com.kingsrook.qqq.sampleandroidmobileapp.previews.utils.PreviewUtils
 
 /***************************************************************************
@@ -35,6 +36,8 @@ import com.kingsrook.qqq.sampleandroidmobileapp.previews.utils.PreviewUtils
 @Composable
 fun MenuDialogPreviewNormal()
 {
+   QViewModel.applicationVersion = "17.47"
+   QViewModel.applicationBuildTimestamp = "2024-11-04 14:36:00 UTC"
    val qViewModel = PreviewUtils.createQViewModel().also()
    {
       it.logInSuccessful()

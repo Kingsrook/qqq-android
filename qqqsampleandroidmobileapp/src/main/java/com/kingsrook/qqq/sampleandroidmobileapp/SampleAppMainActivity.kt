@@ -29,6 +29,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -53,14 +54,15 @@ class SampleAppMainActivity : ComponentActivity()
    {
       /////////////////////////////////////////////////////////////////////////////////////////////
       // configure your application:                                                             //
+      // availableEnvironments: list of Environments - labels & Urls of your application servers //
+      //                                                                                         //
+      // and, ideally, you can define these 4 settings (see below) in a strings.xml values file  //
       // title: text displayed in topAppBar                                                      //
       // scheme: unique identifier for your app, used by URL-scheme-based callbacks              //
-      // availableEnvironments: list of Environments - labels & Urls of your application servers //
       // applicationName: name sent to your backend server to identify this frontend application //
       // applicationVersion: version that accompanies applicationName.                           //
+      // applicationBuildTimestamp: timestamp of the app's build (e.g., injected by CD pipeline) //
       /////////////////////////////////////////////////////////////////////////////////////////////
-      val title = "Sample App"
-      QAuth0Service.scheme = "qqqsampleapp"
       QAppContainer.availableEnvironments = listOf(
          Environment("Production", "https://live.coldtrack.com/"),
          Environment("Staging", "https://live.coldtrack-staging.com/"),
@@ -68,8 +70,6 @@ class SampleAppMainActivity : ComponentActivity()
          Environment("Local Dev", "http://192.168.4.122:8000/"),
          Environment("Bad URL", "http://no.such.domain.dot.dot/"),
       )
-      QViewModel.applicationName = "qqqSampleApp"
-      QViewModel.applicationVersion = "0.1"
       val splashResourceId: Int? = null // R.drawable.coldtrack_logo_icon_gradient_800
 
       ///////////////////////////////////////////////////////////
@@ -79,6 +79,12 @@ class SampleAppMainActivity : ComponentActivity()
       enableEdgeToEdge()
       setContent()
       {
+         val title = stringResource(R.string.app_title)
+         QAuth0Service.scheme = stringResource(R.string.app_scheme)
+         QViewModel.applicationName = stringResource(R.string.app_name)
+         QViewModel.applicationVersion = stringResource(R.string.app_version)
+         QViewModel.applicationBuildTimestamp = stringResource(R.string.application_build_timestamp)
+
          QViewModel.dataStore = LocalContext.current.dataStore
          val qViewModel: QViewModel = viewModel(factory = QViewModel.factory)
 

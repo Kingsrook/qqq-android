@@ -1,6 +1,6 @@
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ QQQ - Low-code Application Framework for Engineers.
-  ~ Copyright (C) 2024-2024.  Kingsrook, LLC
+  ~ Copyright (C) 2004-2024.  Kingsrook, LLC
   ~ 651 N Broad St Ste 205 # 6917 | Middletown DE 19709 | United States
   ~ contact@kingsrook.com
   ~ https://github.com/Kingsrook/
@@ -17,12 +17,9 @@
   ~
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  ~
   -->
 
 <resources>
-   <string name="app_name">qqqSampleAndroidMobileApp</string>
-   <string name="app_version">0.1</string>
-   <string name="app_title">Sample App</string>
-   <string name="app_scheme">sampleapp</string>
-   <string name="application_build_timestamp">1970-01-01 00:00:00</string>
+   <string name="qqq_android_version">0.0</string>
 </resources>

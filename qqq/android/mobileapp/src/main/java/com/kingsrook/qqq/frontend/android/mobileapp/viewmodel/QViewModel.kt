@@ -524,6 +524,7 @@ open class QViewModel(
    {
       var applicationName: String = "anonymousApp"
       var applicationVersion: String = "0"
+      var applicationBuildTimestamp: String? = null
 
       lateinit var dataStore: DataStore<Preferences>
 
