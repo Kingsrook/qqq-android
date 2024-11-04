@@ -38,7 +38,7 @@ import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.QViewModel
 /***************************************************************************
  **
  ***************************************************************************/
-class QNavigator(var navController: NavHostController, val qViewModel: QViewModel) : ViewModel()
+class QNavigator(var navController: NavHostController?, val qViewModel: QViewModel) : ViewModel()
 {
    var navDepth: Int by mutableStateOf(0)
       private set
@@ -51,7 +51,7 @@ class QNavigator(var navController: NavHostController, val qViewModel: QViewMode
 
    init
    {
-      navController.addOnDestinationChangedListener()
+      navController?.addOnDestinationChangedListener()
       { controller, destination, _ ->
 
          /////////////////////////////////////////////////////////////////
@@ -106,7 +106,7 @@ class QNavigator(var navController: NavHostController, val qViewModel: QViewMode
       titleStackMutation.add(label)
       titleStack = titleStackMutation
 
-      navController.navigate(route)
+      navController?.navigate(route)
    }
 
    /***************************************************************************
@@ -115,9 +115,9 @@ class QNavigator(var navController: NavHostController, val qViewModel: QViewMode
    fun popStack()
    {
       navDepth--
-      if(!navController.popBackStack())
+      if(navController?.popBackStack() != true)
       {
-         navController.navigate(HomeRoute)
+         navController?.navigate(HomeRoute)
          navDepth = 0
       }
 

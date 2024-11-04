@@ -101,7 +101,9 @@ open class QViewModel(
 
    var topBarStatusText: String? by mutableStateOf("")
 
-   lateinit var qNavigator: QNavigator
+   var qNavigator: QNavigator = QNavigator(null, this)
+      private set
+
    private var initedQNavigator = false
 
    var activeProcessViewModel: ProcessViewModel? = null
@@ -120,7 +122,7 @@ open class QViewModel(
     ** as part of not re-creating all the things upon orientation change -
     ** own the qNavigator & navController here
     ***************************************************************************/
-   fun setNavController(navController: NavHostController)
+   fun setNavController(navController: NavHostController?)
    {
       if(!initedQNavigator)
       {

@@ -28,9 +28,8 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -59,8 +58,7 @@ import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.QViewModel
 @Composable
 fun QTopAppBar(qViewModel: QViewModel, defaultTitle: String = "A QQQ Android Application", navMenuCallback: (() -> Unit)? = null, qNavigator: QNavigator? = null)
 {
-   val isUserDialogOpen = remember { mutableStateOf(false) }
-   val isEnvironmentDialogOpen = remember { mutableStateOf(false) }
+   val isMenuDialogOpen = remember { mutableStateOf(false) }
 
    val title = if(qNavigator?.titleStack?.isEmpty() == false) qNavigator.titleStack.get(qNavigator.titleStack.size - 1) ?: defaultTitle else defaultTitle
 
@@ -135,18 +133,11 @@ fun QTopAppBar(qViewModel: QViewModel, defaultTitle: String = "A QQQ Android App
             Text(it)
          }
 
-         IconButton(onClick = { isUserDialogOpen.value = true }, modifier = Modifier
+         IconButton(onClick = { isMenuDialogOpen.value = true }, modifier = Modifier
             .focusProperties { canFocus = false }
-            .testTag("topBar.userIcon"))
+            .testTag("topBar.menuIcon"))
          {
-            Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "User Information")
-         }
-
-         IconButton(onClick = { isEnvironmentDialogOpen.value = true }, modifier = Modifier
-            .focusProperties { canFocus = false }
-            .testTag("topBar.environmentIcon"))
-         {
-            Icon(imageVector = Icons.Default.Place, contentDescription = "App Environment")
+            Icon(imageVector = Icons.Default.Menu, contentDescription = "Information")
          }
       }
    )
@@ -156,14 +147,9 @@ fun QTopAppBar(qViewModel: QViewModel, defaultTitle: String = "A QQQ Android App
       NoNetworkDialog(qViewModel)
    }
 
-   if(isUserDialogOpen.value)
+   if(isMenuDialogOpen.value)
    {
-      UserDialog(qViewModel, isUserDialogOpen)
-   }
-
-   if(isEnvironmentDialogOpen.value)
-   {
-      EnvironmentDialog(qViewModel, isEnvironmentDialogOpen)
+      MenuDialog(qViewModel, defaultTitle, isMenuDialogOpen)
    }
 
 }

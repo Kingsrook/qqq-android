@@ -36,6 +36,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.preferencesOf
+import androidx.navigation.NavHostController
 import com.kingsrook.qqq.frontend.android.mobileapp.data.ENVIRONMENT_JSON_KEY
 import com.kingsrook.qqq.frontend.android.mobileapp.data.MockPreferencesDataStore
 import com.kingsrook.qqq.frontend.android.mobileapp.data.SESSION_USER_FULL_NAME_KEY
@@ -81,6 +82,7 @@ class SessionTests : BaseTest()
    {
       val dataStore = makeMockPreferencesDataStoreWithValues()
       val qViewModel = QViewModel(SampleAppMockQQQRepository(), dataStore)
+      qViewModel.setNavController(null)
 
       TestUtils.startStandardTest(composeTestRule, qViewModel)
 
@@ -96,11 +98,7 @@ class SessionTests : BaseTest()
       composeTestRule
          .onNodeWithText("Current User:  ${fullName}")
          .assertIsDisplayed()
-      composeTestRule
-         .onNodeWithText("Dismiss")
-         .performClick()
 
-      openEnvironmentDialog()
       composeTestRule
          .onNodeWithText(envLabel)
          .assertIsDisplayed()
@@ -211,7 +209,7 @@ class SessionTests : BaseTest()
       TestUtils.startStandardTest(composeTestRule)
       TestUtils.login(composeTestRule)
 
-      openEnvironmentDialog()
+      openUserDialog()
 
       composeTestRule
          .onNodeWithText("Test Env 1")
@@ -260,29 +258,13 @@ class SessionTests : BaseTest()
    private fun openUserDialog()
    {
       composeTestRule
-         .onNodeWithTag("topBar.userIcon", true)
+         .onNodeWithTag("topBar.menuIcon", true)
          .assertIsDisplayed()
          .assertHasClickAction()
          .performClick()
 
       composeTestRule
-         .onNodeWithText("User Information")
-         .assertIsDisplayed()
-   }
-
-   /***************************************************************************
-    **
-    ***************************************************************************/
-   private fun openEnvironmentDialog()
-   {
-      composeTestRule
-         .onNodeWithTag("topBar.environmentIcon", true)
-         .assertIsDisplayed()
-         .assertHasClickAction()
-         .performClick()
-
-      composeTestRule
-         .onNodeWithText("App Environment")
+         .onNodeWithTag("menuDialog.title")
          .assertIsDisplayed()
    }
 

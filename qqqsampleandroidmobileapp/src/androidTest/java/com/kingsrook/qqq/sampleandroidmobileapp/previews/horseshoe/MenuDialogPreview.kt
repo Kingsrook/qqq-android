@@ -25,18 +25,52 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
-import com.kingsrook.qqq.frontend.android.mobileapp.ui.horseshoe.EnvironmentDialog
+import com.kingsrook.qqq.frontend.android.mobileapp.ui.horseshoe.MenuDialog
 import com.kingsrook.qqq.sampleandroidmobileapp.previews.utils.PreviewUtils
 
 /***************************************************************************
  **
  ***************************************************************************/
-@Preview
+@Preview(widthDp = 400)
 @Composable
-fun EnvironmentDialogPreview()
+fun MenuDialogPreviewNormal()
+{
+   val qViewModel = PreviewUtils.createQViewModel().also()
+   {
+      it.logInSuccessful()
+      it.sessionUserFullName = "John Doekhoff"
+   }
+   val isOpen = remember { mutableStateOf(true) }
+
+   MenuDialog(qViewModel, "A Preview", isOpen)
+}
+
+/***************************************************************************
+ **
+ ***************************************************************************/
+@Preview(widthDp = 400)
+@Composable
+fun MenuDialogPreviewSuperLongName()
+{
+   val qViewModel = PreviewUtils.createQViewModel().also()
+   {
+      it.logInSuccessful()
+      it.sessionUserFullName = "Testasuperlongnameandwheredoesitwraandwheredoesitwrappandwheredoesitwrap?"
+   }
+   val isOpen = remember { mutableStateOf(true) }
+
+   MenuDialog(qViewModel, "A Preview", isOpen)
+}
+
+/***************************************************************************
+ **
+ ***************************************************************************/
+@Preview(widthDp = 400)
+@Composable
+fun MenuDialogPreviewNotLoggedIn()
 {
    val qViewModel = PreviewUtils.createQViewModel()
    val isOpen = remember { mutableStateOf(true) }
 
-   EnvironmentDialog(qViewModel, isOpen)
+   MenuDialog(qViewModel, "A Preview", isOpen)
 }
