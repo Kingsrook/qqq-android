@@ -40,6 +40,7 @@ import okhttp3.Response
 import org.json.JSONObject
 import retrofit2.Retrofit
 import java.io.IOException
+import java.util.TimeZone
 
 
 /***************************************************************************
@@ -78,7 +79,7 @@ class NetworkQQQRepository(private var baseUrl: String) : QQQRepository
          .addConverterFactory(retroJson.asConverterFactory("application/json".toMediaType()))
          .client(
             OkHttpClient.Builder()
-               .addInterceptor(SessionCookieInterceptor)
+               .addInterceptor(QQQInterceptor)
                .build()
          )
          .baseUrl(baseUrl)
@@ -90,7 +91,7 @@ class NetworkQQQRepository(private var baseUrl: String) : QQQRepository
     ***************************************************************************/
    override fun setSessionUUID(sessionUUID: String)
    {
-      SessionCookieInterceptor.sessionUUID = sessionUUID
+      QQQInterceptor.sessionUUID = sessionUUID
    }
 
    /***************************************************************************
@@ -213,7 +214,7 @@ class NetworkQQQRepository(private var baseUrl: String) : QQQRepository
    /***************************************************************************
     **
     ***************************************************************************/
-   companion object SessionCookieInterceptor : Interceptor
+   companion object QQQInterceptor : Interceptor
    {
       private var sessionUUID: String? = null
 
@@ -226,6 +227,9 @@ class NetworkQQQRepository(private var baseUrl: String) : QQQRepository
          {
             requestBuilder.addHeader("Cookie", "sessionUUID=${it}")
          }
+
+         val timeZone = TimeZone.getDefault()
+         requestBuilder.addHeader("X-QQQ-UserTimezone", timeZone.toZoneId().toString())
 
          val response: Response = chain.proceed(requestBuilder.build())
 
