@@ -181,6 +181,8 @@ open class ProcessViewModel : ViewModel()
    ////////////////////////////////////////////////////////////////////////////////////////////////
    var formFieldNames: MutableSet<String> = mutableSetOf()
 
+   private var lastInvokedControlCallbackStepInstanceValues: MutableMap<String, Any> = mutableMapOf()
+
    ////////////////////////////////////////////////////////////////////////////
    // Note:  if you add new fields - please, add them to `fun reset()` below //
    ////////////////////////////////////////////////////////////////////////////
@@ -223,6 +225,7 @@ open class ProcessViewModel : ViewModel()
       onSubmitCallback = null
       processValues = mutableMapOf()
       formFieldNames = mutableSetOf()
+      lastInvokedControlCallbackStepInstanceValues = mutableMapOf()
    }
 
    /***************************************************************************
@@ -626,6 +629,26 @@ open class ProcessViewModel : ViewModel()
                   processValues[split[1]] = true
                }
                controlCallbackName = split[1]
+            }
+            else if(split[0] == "invokeControlCallbackOnlyOnce")
+            {
+               controlCallbackName = split[1]
+               if(lastInvokedControlCallbackStepInstanceValues[controlCallbackName] == stepInstanceCounter)
+               {
+                  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                  // if we've already invoked the named control callback on this step, then un-set the callback name, so we won't invoke it again. //
+                  // was: if we've already played audio on this step, then un-set the callback name, so we won't play it again.                    //
+                  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                  controlCallbackName = null
+               }
+               else
+               {
+                  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                  // else, if we haven't invoked the named control callback on this step, then set flag to indicate that we're calling it now. //
+                  // was: else, if we haven't played audio on this step, then set flag to indicate that we're playing it now.                  //
+                  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                  lastInvokedControlCallbackStepInstanceValues[controlCallbackName] = stepInstanceCounter
+               }
             }
             else
             {

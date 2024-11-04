@@ -55,6 +55,12 @@ fun AudioWidgetBlock(params: WidgetBlockParameters, modifier: Modifier = Modifie
 
       if(uri != null)
       {
+         fun doPlay()
+         {
+            mediaPlayer = createMediaPlayer(context, uri)
+            mediaPlayer?.start()
+         }
+
          /////////////////////////////////////////////////////////////////////////////////////////
          // use this lifecycle owner effect "stuff", to play the tone upon initial-composition, //
          // and to dispose of the media player upon dispose/stop/etc                            //
@@ -68,8 +74,19 @@ fun AudioWidgetBlock(params: WidgetBlockParameters, modifier: Modifier = Modifie
             { _, event ->
                if(event == Lifecycle.Event.ON_START)
                {
-                  mediaPlayer = createMediaPlayer(context, uri)
-                  mediaPlayer?.start()
+                  //////////////////////////////////////////////////////////////////////////////////////////////
+                  // go through the actionCallback - to try to manage making sure we only play the audio once //
+                  // (since we'll assume that the callback runs in an object which doesn't get re-created if  //
+                  // the device orientation changes -- without this (e.g., if we just played the audio here), //
+                  // then we re-played it upon screen rotation - which wasn't good.                           //
+                  //////////////////////////////////////////////////////////////////////////////////////////////
+                  params.actionCallback?.invoke(mapOf(
+                     "registerControlCallbackName" to "AudioWidgetBlock",
+                     "registerControlCallbackFunction" to ::doPlay))
+
+                  params.actionCallback?.invoke(mapOf(
+                     "controlCode" to "invokeControlCallbackOnlyOnce:AudioWidgetBlock"
+                  ))
                }
                else if(event == Lifecycle.Event.ON_STOP)
                {
