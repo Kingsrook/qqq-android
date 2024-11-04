@@ -30,7 +30,6 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -116,6 +115,11 @@ fun ContentsInLayout(params: WidgetBlockParameters, disableControls: Boolean = f
       }
 
       "FLEX_ROW_SPACE_BETWEEN" -> Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = boxModifier.fillMaxWidth())
+      {
+         BlockList(params, widgetBlock.subBlocks, disableControls)
+      }
+
+      "FLEX_ROW" -> Row(modifier = boxModifier.fillMaxWidth())
       {
          BlockList(params, widgetBlock.subBlocks, disableControls)
       }
