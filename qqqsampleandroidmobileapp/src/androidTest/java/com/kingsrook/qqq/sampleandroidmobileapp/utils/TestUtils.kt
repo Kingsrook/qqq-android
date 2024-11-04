@@ -33,6 +33,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.printToLog
+import androidx.navigation.compose.rememberNavController
 import com.kingsrook.qqq.frontend.android.core.model.metadata.QAppNodeType
 import com.kingsrook.qqq.frontend.android.mobileapp.QMobileAppMain
 import com.kingsrook.qqq.sampleandroidmobileapp.SampleAppMockQQQRepository
@@ -64,6 +65,10 @@ object TestUtils
       composeTestRule.setContent()
       {
          toast = Toast.makeText(LocalContext.current, "This is a test", 3)
+
+         val navController = rememberNavController()
+         qViewModel.setNavController(navController)
+
          QMobileAppMain(this.qViewModel, "Test App")
       }
    }
