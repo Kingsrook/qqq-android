@@ -55,7 +55,7 @@ data class WidgetBlock(
 
             val map: Map<String, Any?> = param as Map<String, Any?>
             val blockId = if(map["blockId"] != null) "${map["blockId"]}" else ""
-            val blockType = if(map["blockType"] != null) "${map["blockType"]}" else if(map["blockTypeName"] != null) "${map["blockTypeName"]}" else "" // todo - not great, looking under 2 keys...
+            val blockType = if(map["blockType"] != null) "${map["blockType"]}"  else ""
             val conditional = if(map["conditional"] != null) "${map["conditional"]}" else null
             val layout = if(map["layout"] != null) "${map["layout"]}" else null
             val modalMode = mapGetOrElse(map, "modalMode")
@@ -66,7 +66,7 @@ data class WidgetBlock(
             val mapValues = map["values"]
             val values = if(mapValues is Map<*, *>) mapValues else mutableMapOf<String, Any>()
 
-            val mapSubBlocks = map["subBlocks"] ?: map["blocks"] // todo - not great, looking under 2 keys...
+            val mapSubBlocks = map["subBlocks"]
 
             var subBlocks = emptyList<WidgetBlock>()
             if(mapSubBlocks is List<*>)

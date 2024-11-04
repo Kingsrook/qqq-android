@@ -224,7 +224,7 @@ private fun determineState(processViewModel: ProcessViewModel, qInstance: QInsta
             var foundBlocks = false
             if(widgetData is Map<*, *>)
             {
-               val blocks = widgetData["blocks"]
+               val blocks = widgetData["subBlocks"]
                if(blocks is List<*>)
                {
                   blocks.forEach()
