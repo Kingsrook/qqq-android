@@ -240,6 +240,7 @@ open class QViewModel(
    fun requestLogout()
    {
       isLogoutRequested = true
+      qNavigator.goHome()
    }
 
    /***************************************************************************
@@ -407,6 +408,7 @@ open class QViewModel(
     ***************************************************************************/
    fun switchEnvironment(environment: Environment, postSwitchCallback: () -> Unit)
    {
+      qNavigator.goHome()
       viewModelScope.launch()
       {
          activateEnvironment(environment).join()
