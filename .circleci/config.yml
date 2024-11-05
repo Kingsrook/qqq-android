@@ -87,6 +87,23 @@ jobs:
           name: Evaluate benchmark results
           command: node scripts/eval_startup_benchmark_output.js
 
+  maven-deploy:
+    executor:
+      name: android/android-docker
+      tag: default
+    steps:
+      - checkout
+      - android/restore-gradle-cache
+      - run:
+          name: Write credentials to gradle.properties
+          command: |
+            echo "githubQqqMavenRegistryUsername=${QQQ_ANDROID_MAVEN_REGISTRY_USERNAME}" >> gradle.properties
+            echo "githubQqqMavenRegistryPassword=${QQQ_ANDROID_MAVEN_REGISTRY_PASSWORD}" >> gradle.properties
+      - run:
+          name: Publish (Deploy) to Maven
+          command: |
+            ./gradlew publishMavenPublicationToGithubQqqMavenRegistryRepository
+
   release-build:
     executor:
       name: android/android-docker
@@ -112,34 +129,39 @@ workflows:
               ## main will run all the versions below.
               ignore: main
 
-      - android-test:
-          matrix:
-            alias: android-test-all
-            parameters:
-              system-image:
-                - system-images;android-35;google_apis;x86
-                - system-images;android-34;google_apis;x86
-                - system-images;android-33;google_apis;x86
-                - system-images;android-32;google_apis;x86
-                - system-images;android-31;google_apis;x86
-                - system-images;android-30;google_apis;x86
-                - system-images;android-29;google_apis;x86
-                - system-images;android-28;google_apis;x86
-                - system-images;android-27;google_apis;x86
-                - system-images;android-26;google_apis;x86
-          name: android-test-<<matrix.system-image>>
-          filters:
-            branches:
-              only: main
+      ## todo? - android-test:
+      ## todo?     matrix:
+      ## todo?       alias: android-test-all
+      ## todo?       parameters:
+      ## todo?         system-image:
+      ## todo?           - system-images;android-35;google_apis;x86
+      ## todo?           - system-images;android-34;google_apis;x86
+      ## todo?           - system-images;android-33;google_apis;x86
+      ## todo?           - system-images;android-32;google_apis;x86
+      ## todo?           - system-images;android-31;google_apis;x86
+      ## todo?           - system-images;android-30;google_apis;x86
+      ## todo?           - system-images;android-29;google_apis;x86
+      ## todo?           - system-images;android-28;google_apis;x86
+      ## todo?           - system-images;android-27;google_apis;x86
+      ## todo?           - system-images;android-26;google_apis;x86
+      ## todo?     name: android-test-<<matrix.system-image>>
+      ## todo?     filters:
+      ## todo?       branches:
+      ## todo?         only: main
 
-      # - benchmarks-emulator
-      # - benchmarks-ftl
+      ## todo? - release-build:
+      ## todo?     requires:
+      ## todo?       - unit-test
+      ## todo?       - android-test
+      ## todo?       - android-test-all
+      ## todo?     filters:
+      ## todo?       branches:
+      ## todo?         only: main
 
-      - release-build:
+      - maven-deploy:
           requires:
             - unit-test
-            - android-test-all
-            # - benchmarks-ftl
-          filters:
-            branches:
-              only: main
+            - android-test
+      ## todo?     filters:
+      ## todo?       branches:
+      ## todo?         only: main

@@ -3,16 +3,20 @@ plugins {
    alias(libs.plugins.kotlin.android)
    kotlin("plugin.serialization")
    id("kotlinx-serialization")
+   id("com.vanniktech.maven.publish") version "0.30.0"
 }
 
-/*
-buildFeatures {
-    compose = true
+publishing {
+   repositories {
+      maven {
+         name = "githubQqqMavenRegistry"
+         url = uri("https://maven.pkg.github.com/Kingsrook/qqq-maven-registry")
+         // username and password (a personal Github access token) should be specified as
+         // `githubPackagesUsername` and `githubPackagesPassword` Gradle properties
+         credentials(PasswordCredentials::class)
+      }
+   }
 }
-composeOptions {
-    kotlinCompilerExtensionVersion = rootProject.extra["compose_version"] as String
-}
- */
 
 android {
    namespace = "com.kingsrook.qqq.frontend.android.mobileapp"
