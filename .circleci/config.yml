@@ -97,6 +97,7 @@ jobs:
       - run:
           name: Write credentials to gradle.properties
           command: |
+            echo "" >> gradle.properties
             echo "githubQqqMavenRegistryUsername=${QQQ_ANDROID_MAVEN_REGISTRY_USERNAME}" >> gradle.properties
             echo "githubQqqMavenRegistryPassword=${QQQ_ANDROID_MAVEN_REGISTRY_PASSWORD}" >> gradle.properties
       - run:
