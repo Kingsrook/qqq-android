@@ -89,7 +89,7 @@ jobs:
 
   maven-deploy:
     executor:
-      name: android/android-docker
+      name: android/android-machine
       tag: default
     steps:
       - checkout
