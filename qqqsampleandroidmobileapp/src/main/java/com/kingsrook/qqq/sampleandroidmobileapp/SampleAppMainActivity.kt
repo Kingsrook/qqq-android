@@ -70,7 +70,7 @@ class SampleAppMainActivity : ComponentActivity()
          Environment("Local Dev", "http://192.168.4.122:8000/"),
          Environment("Bad URL", "http://no.such.domain.dot.dot/"),
       )
-      val splashResourceId: Int? = null // R.drawable.coldtrack_logo_icon_gradient_800
+      val splashResourceId: Int? = null // R.drawable.kingsrook_logo
 
       ///////////////////////////////////////////////////////////
       // boilerplate - paste in below your app's configuration //
