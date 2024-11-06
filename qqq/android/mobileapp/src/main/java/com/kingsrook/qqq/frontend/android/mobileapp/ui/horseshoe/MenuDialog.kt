@@ -125,6 +125,30 @@ fun MenuDialog(qViewModel: QViewModel, appTitle: String, isMenuDialogOpen: Mutab
                }
             }
 
+            //////////////////
+            // Reset button //
+            //////////////////
+            item()
+            {
+               Column(Modifier.padding(bottom = 16.dp))
+               {
+                  Text("In case of issues, you may try:")
+
+                  Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth())
+                  {
+                     TextButton(
+                        onClick =
+                        {
+                           qViewModel.resetApp()
+                           isMenuDialogOpen.value = false
+                        }
+                     ) { Text("Reset App") }
+                  }
+
+                  HorizontalDivider()
+               }
+            }
+
             /////////////////
             // app version //
             /////////////////
