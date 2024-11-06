@@ -64,6 +64,11 @@ open class QViewModel(
 {
    private var settingsRepository: SettingsRepository = SettingsRepository(dataStore)
 
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   // this should not get reset ever - it's added to avoid re-running splash animation on orientation change //
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   var didRunSplashAnimation = false
+
    var initialLoadFromDataStoreLoadState: LoadState<Unit> by mutableStateOf(LoadState.Loading(Unit))
       private set
 
@@ -108,6 +113,10 @@ open class QViewModel(
 
    var activeProcessViewModel: ProcessViewModel? = null
 
+   ////////////////////////////////////////////////////////////////////
+   // note - new properties - do you want to add them to clearAll()? //
+   ////////////////////////////////////////////////////////////////////
+
    init
    {
       viewModelScope.launch()
@@ -144,6 +153,16 @@ open class QViewModel(
       loadAuthenticationMetaData()
    }
 
+
+   /***************************************************************************
+    **
+    ***************************************************************************/
+   fun resetApp()
+   {
+      clearAll()
+      loadAuthenticationMetaData()
+   }
+
    /***************************************************************************
     **
     ***************************************************************************/
@@ -163,6 +182,8 @@ open class QViewModel(
       authenticationMetaDataLoadState = LoadState.Loading(Unit)
       manageSessionLoadState = LoadState.Loading(Unit)
       qInstanceLoadState = LoadState.Loading(Unit)
+      topBarStatusText = ""
+      activeProcessViewModel = null
    }
 
    /***************************************************************************

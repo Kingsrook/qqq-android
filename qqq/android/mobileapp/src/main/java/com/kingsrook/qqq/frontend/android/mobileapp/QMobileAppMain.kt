@@ -63,7 +63,7 @@ enum class SplashState
 @Composable
 fun QMobileAppMain(qViewModel: QViewModel, title: String, splashImage: Painter? = null)
 {
-   val splashState = remember { mutableStateOf(if(splashImage == null) SplashState.DONE else SplashState.INITIAL) }
+   val splashState = remember { mutableStateOf(if(splashImage == null || qViewModel.didRunSplashAnimation) SplashState.DONE else SplashState.INITIAL) }
    val splashFadeOutMillis = remember { mutableIntStateOf(1500) }
    val splashDurationMillis = 3000L
    val splashSlideInMillis = 2500
@@ -74,7 +74,11 @@ fun QMobileAppMain(qViewModel: QViewModel, title: String, splashImage: Painter? 
       {
          SplashState.INITIAL ->
          {
-            splashState.value = SplashState.ACTIVE
+            if(!qViewModel.didRunSplashAnimation)
+            {
+               qViewModel.didRunSplashAnimation = true;
+               splashState.value = SplashState.ACTIVE
+            }
          }
 
          SplashState.ACTIVE ->
