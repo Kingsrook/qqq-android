@@ -163,6 +163,6 @@ workflows:
           requires:
             - unit-test
             - android-test
-      ## todo?     filters:
-      ## todo?       branches:
-      ## todo?         only: main
+          filters:
+            branches:
+              only: main
