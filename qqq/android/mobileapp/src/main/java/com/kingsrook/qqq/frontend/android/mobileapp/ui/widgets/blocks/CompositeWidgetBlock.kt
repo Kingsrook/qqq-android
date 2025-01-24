@@ -43,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.kingsrook.qqq.frontend.android.core.model.widgets.WidgetBlock
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.utils.BlockStyleUtils
 
@@ -188,13 +189,18 @@ fun Modal(params: WidgetBlockParameters, disableControls: Boolean = false)
                val eventValues = mapOf("controlCode" to "hideModal:${params.widgetBlock.blockId}")
                params.actionCallback?.invoke(eventValues)
                isModalShown.value = false
-            }
+            },
+
+            ////////////////////////////////////////////////////////
+            // this line lets us go full-width (esp on landscape) //
+            ////////////////////////////////////////////////////////
+            properties = DialogProperties(usePlatformDefaultWidth = false)
          )
          {
             Card(
                modifier = Modifier
                   .fillMaxWidth()
-                  .padding(4.dp),
+                  .padding(8.dp),
                shape = RoundedCornerShape(16.dp),
             )
             {
