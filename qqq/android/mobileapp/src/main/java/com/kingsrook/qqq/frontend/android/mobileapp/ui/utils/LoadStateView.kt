@@ -30,11 +30,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.kingsrook.qqq.frontend.android.mobileapp.R
 import com.kingsrook.qqq.frontend.android.mobileapp.ui.common.FullScreenLoading
 import com.kingsrook.qqq.frontend.android.mobileapp.viewmodel.LoadState
 
@@ -47,6 +54,7 @@ fun LoadStateView(
    modifier: Modifier = Modifier,
    reloader: Reloader? = null,
    loadingText: String = "Loading...",
+   errorHeadline: String = "An Error Has Occurred",
    content: @Composable ColumnScope.() -> Unit
 )
 {
@@ -58,9 +66,29 @@ fun LoadStateView(
       ///////////////////////////////////////////////////////
       LazyColumn(Modifier.padding(8.dp))
       {
+         item()
+         {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth())
+            {
+               Icon(
+                  painter = painterResource(id = R.drawable.error_outline),
+                  tint = Color.Red,
+                  contentDescription = "Error",
+                  modifier = Modifier
+                     .fillMaxWidth()
+                     .padding(bottom = 40.dp, top = 80.dp)
+                     .scale(4f)
+               )
+               Text(errorHeadline, fontWeight = FontWeight.SemiBold, fontSize = 24.sp, color = Color.Red, modifier = Modifier.padding(vertical = 16.dp))
+            }
+         }
+
          items(LoadState.getErrorMessages(loadStates))
          {
-            Text("Error: ${it}", color = Color.Red)
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth())
+            {
+               Text(it, fontSize = 16.sp, modifier = Modifier.padding(bottom = 16.dp))
+            }
          }
 
          if(reloader != null)

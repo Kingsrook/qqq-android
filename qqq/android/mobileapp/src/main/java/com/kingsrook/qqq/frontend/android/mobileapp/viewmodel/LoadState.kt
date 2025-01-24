@@ -28,6 +28,10 @@ sealed interface LoadState<T>
 {
    data class Success<T>(val value: T) : LoadState<T>
    data class Error<T>(val message: String) : LoadState<T>
+   {
+      constructor(e: Exception, m: String) : this("${m}: ${e.message ?: "Error details not available"}")
+   }
+
    data class Loading<T>(val unit: Unit) : LoadState<T>
    {
       val start = System.currentTimeMillis()

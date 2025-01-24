@@ -196,7 +196,10 @@ open class ProcessViewModel : ViewModel()
       viewModelScope.launch()
       {
          loadProcessMetaData().join()
-         initProcess()
+         if(processMetaData != null)
+         {
+            initProcess()
+         }
       }
    }
 
@@ -249,7 +252,7 @@ open class ProcessViewModel : ViewModel()
          catch(e: Exception)
          {
             Log.w(TAG, "Error loading ProcessMetaData", e)
-            LoadState.Error(e.message ?: "Error loading ProcessMetaData")
+            LoadState.Error(e, "Error loading Process MetaData")
          }
       }
    }
@@ -272,7 +275,7 @@ open class ProcessViewModel : ViewModel()
          catch(e: Exception)
          {
             Log.w(TAG, "Error initing process", e)
-            initLoadState = LoadState.Error(e.message ?: "Error initing process")
+            initLoadState = LoadState.Error(e, "Error launching process")
          }
       }
    }
